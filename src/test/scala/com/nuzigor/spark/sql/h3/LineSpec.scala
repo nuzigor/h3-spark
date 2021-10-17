@@ -1,3 +1,8 @@
+/*
+ * Copyright 2021 Igor Nuzhnov
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package com.nuzigor.spark.sql.h3
 
 class LineSpec extends H3Spec {

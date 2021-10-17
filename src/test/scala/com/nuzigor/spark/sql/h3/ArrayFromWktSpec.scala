@@ -1,3 +1,8 @@
+/*
+ * Copyright 2021 Igor Nuzhnov
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package com.nuzigor.spark.sql.h3
 
 class ArrayFromWktSpec extends H3Spec {
@@ -8,7 +13,9 @@ class ArrayFromWktSpec extends H3Spec {
   }
 
   it should "convert WKT polygon with holes to h3" in {
-    val spatialDf = sparkSession.sql("SELECT h3_array_from_wkt('POLYGON((0.5 0.5,5 0,5 5,0 5,0.5 0.5), (1.5 1,4 3,4 1,1.5 1))', 7), h3_array_from_wkt('POLYGON((0.5 0.5,5 0,5 5,0 5,0.5 0.5))', 7)")
+    val polygon1 = "POLYGON((0.5 0.5,5 0,5 5,0 5,0.5 0.5), (1.5 1,4 3,4 1,1.5 1))"
+    val polygon2 = "POLYGON((0.5 0.5,5 0,5 5,0 5,0.5 0.5))"
+    val spatialDf = sparkSession.sql(s"SELECT h3_array_from_wkt('$polygon1', 7), h3_array_from_wkt('$polygon2', 7)")
     val h3Holes = spatialDf.first().getAs[Seq[Long]](0)
     val h3Solid = spatialDf.first().getAs[Seq[Long]](1)
     assert(h3Holes.size < h3Solid.size)
@@ -40,14 +47,16 @@ class ArrayFromWktSpec extends H3Spec {
   }
 
   it should "return h3 indices for all line segments of multi line string WKT" in {
-    val spatialDf = sparkSession.sql("SELECT h3_array_from_wkt('MULTILINESTRING ((-0.29 35.75, -0.30 35.83, -0.31 35.96), (-1.29 38.75, -1.30 38.83, -1.31 38.96))', 7)")
+    val multiLineString = "MULTILINESTRING ((-0.29 35.75, -0.30 35.83, -0.31 35.96), (-1.29 38.75, -1.30 38.83, -1.31 38.96))"
+    val spatialDf = sparkSession.sql(s"SELECT h3_array_from_wkt('$multiLineString', 7)")
     val h3 = spatialDf.first().getAs[Seq[Long]](0)
     assert(h3.size === 24)
     assert(h3.size === h3.distinct.size)
   }
 
   it should "merge h3 indices for close line segments of multi line string WKT" in {
-    val spatialDf = sparkSession.sql("SELECT h3_array_from_wkt('MULTILINESTRING ((-0.29 35.75, -0.30 35.83, -0.31 35.96), (-0.27 35.78, -0.30 35.83, -0.31 35.95))', 7)")
+    val multiLineString = "MULTILINESTRING ((-0.29 35.75, -0.30 35.83, -0.31 35.96), (-0.27 35.78, -0.30 35.83, -0.31 35.95))"
+    val spatialDf = sparkSession.sql(s"SELECT h3_array_from_wkt('$multiLineString', 7)")
     val h3 = spatialDf.first().getAs[Seq[Long]](0)
     assert(h3.size === 14)
     assert(h3.size === h3.distinct.size)

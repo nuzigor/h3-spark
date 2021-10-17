@@ -1,3 +1,8 @@
+/*
+ * Copyright 2021 Igor Nuzhnov
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package com.nuzigor.spark.sql.h3
 
 class ToChildrenSpec extends H3Spec {
@@ -6,7 +11,8 @@ class ToChildrenSpec extends H3Spec {
     val spatialDf = sparkSession.sql(s"SELECT h3_to_children(${h3}l, 11)")
     val children = spatialDf.first().getAs[Seq[Long]](0)
     assert(children.size === 7)
-    assert(children.contains(626988729797656575L))
+    val childH3 = 626988729797656575L
+    assert(children.contains(childH3))
   }
 
   it should "return null for null h3" in {
