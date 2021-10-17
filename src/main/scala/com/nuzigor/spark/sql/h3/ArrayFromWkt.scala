@@ -5,6 +5,7 @@
 
 package com.nuzigor.spark.sql.h3
 
+import com.nuzigor.h3.H3
 import com.uber.h3core.H3Core
 import com.uber.h3core.exceptions.LineUndefinedException
 import com.uber.h3core.util.GeoCoord

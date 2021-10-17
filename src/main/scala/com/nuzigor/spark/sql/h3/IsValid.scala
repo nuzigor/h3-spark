@@ -5,6 +5,7 @@
 
 package com.nuzigor.spark.sql.h3
 
+import com.nuzigor.h3.H3
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{Expression, ImplicitCastInputTypes, NullIntolerant, UnaryExpression}
 import org.apache.spark.sql.types.{BooleanType, DataType, LongType}

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package com.nuzigor.spark.sql.h3
+package com.nuzigor.h3
 
 import com.uber.h3core.H3Core
 
@@ -12,5 +12,5 @@ object H3 {
     override def initialValue(): H3Core = H3Core.newInstance()
   }
 
-  def getInstance() : H3Core = instance.get()
+  def getInstance(): H3Core = instance.get()
 }
