@@ -1,6 +1,6 @@
-# H3 spark
+# H3 / Apache Spark SQL
 
-Brings [Uber H3](https://h3geo.org/) support to Apache Spark SQL
+Brings [H3 - Hexagonal hierarchical geospatial indexing system](https://h3geo.org/) support to [Apache Spark SQL](https://spark.apache.org/)
 
 Installation
 ------------
