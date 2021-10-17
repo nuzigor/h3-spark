@@ -1,3 +1,10 @@
+/*
+ * Copyright 2021 Igor Nuzhnov
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// scalastyle:off
+
 package com.nuzigor.spark.sql.h3
 
 import org.apache.spark.sql.catalyst.FunctionIdentifier
@@ -28,7 +35,7 @@ object H3FunctionRegistry {
   private type BinaryFunctionBuilder = (Expression, Expression) => Expression
   private type TernaryFunctionBuilder = (Expression, Expression, Expression) => Expression
 
-  private val expressions: Map[String, FunctionBuilder] = Map[String, FunctionBuilder](
+  private val expressions: Map[String, FunctionBuilder] = Map(
     expression("from_geo", FromGeo),
     expression("from_wkt", FromWkt),
     expression("array_from_wkt", ArrayFromWkt),
@@ -46,7 +53,7 @@ object H3FunctionRegistry {
   )
 
   private def expression(name: String, unaryFunctionBuilder: UnaryFunctionBuilder) : (String, FunctionBuilder) = {
-    val builder = (expressions: Seq[Expression]) => {
+    val builder : FunctionBuilder = expressions => {
       assert(expressions.size == 1)
       unaryFunctionBuilder(expressions.head)
     }
@@ -55,7 +62,7 @@ object H3FunctionRegistry {
   }
 
   private def expression(name: String, binaryFunctionBuilder: BinaryFunctionBuilder) : (String, FunctionBuilder) = {
-    val builder = (expressions: Seq[Expression]) => {
+    val builder: FunctionBuilder = expressions => {
       assert(expressions.size == 2)
       binaryFunctionBuilder(expressions.head, expressions(1))
     }
@@ -64,7 +71,7 @@ object H3FunctionRegistry {
   }
 
   private def expression(name: String, ternaryFunctionBuilder: TernaryFunctionBuilder) : (String, FunctionBuilder) = {
-    val builder = (expressions: Seq[Expression]) => {
+    val builder : FunctionBuilder = expressions => {
       assert(expressions.size == 3)
       ternaryFunctionBuilder(expressions.head, expressions(1), expressions(2))
     }
@@ -72,3 +79,4 @@ object H3FunctionRegistry {
     (s"h3_$name", builder)
   }
 }
+// scalastyle:on

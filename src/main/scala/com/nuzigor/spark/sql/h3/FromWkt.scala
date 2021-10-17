@@ -32,13 +32,16 @@ case class FromWkt(wktExpr: Expression, resolutionExpr: Expression)
     try {
       val reader = new WKTReader()
       val geometry = reader.read(wkt)
-      if (!geometry.isEmpty) {
+      if (geometry.isEmpty) {
+        null
+      } else {
         val coordinate = geometry.getCoordinate
-        if (coordinate != null) {
-          return H3.getInstance().geoToH3(coordinate.y, coordinate.x, resolution)
+        if (coordinate == null) {
+          null
+        } else {
+          H3.getInstance().geoToH3(coordinate.y, coordinate.x, resolution)
         }
       }
-      null
     } catch {
       case _: ParseException => null
     }

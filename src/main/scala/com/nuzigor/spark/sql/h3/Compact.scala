@@ -28,13 +28,19 @@ case class Compact(h3Expr: Expression)
 
   override protected def nullSafeEval(h3Any: Any): Any = {
     val list = new util.ArrayList[java.lang.Long]()
+    var nullFound = false
     h3Any.asInstanceOf[ArrayData].foreach(LongType, (_, v) =>
       if (v == null) {
-        return null
+        nullFound = true
       } else {
         list.add(v.asInstanceOf[Long])
       }
     )
-    new GenericArrayData(H3.getInstance().compact(list).asScala)
+
+    if (nullFound) {
+      null
+    } else {
+      new GenericArrayData(H3.getInstance().compact(list).asScala)
+    }
   }
 }

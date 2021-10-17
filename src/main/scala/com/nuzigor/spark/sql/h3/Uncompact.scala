@@ -30,15 +30,20 @@ case class Uncompact(h3Expr: Expression, resolutionExpr: Expression)
 
   override protected def nullSafeEval(h3Any: Any, resolutionAny: Any): Any = {
     val list = new util.ArrayList[java.lang.Long]()
+    val resolution = resolutionAny.asInstanceOf[Int]
+    var nullFound = false
     h3Any.asInstanceOf[ArrayData].foreach(LongType, (_, v) =>
       if (v == null) {
-        return null
+        nullFound = true
       } else {
         list.add(v.asInstanceOf[Long])
       }
     )
 
-    val resolution = resolutionAny.asInstanceOf[Int]
-    new GenericArrayData(H3.getInstance().uncompact(list, resolution).asScala)
+    if (nullFound) {
+      null
+    } else {
+      new GenericArrayData(H3.getInstance().uncompact(list, resolution).asScala)
+    }
   }
 }

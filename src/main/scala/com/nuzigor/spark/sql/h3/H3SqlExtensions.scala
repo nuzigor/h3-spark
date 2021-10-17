@@ -1,8 +1,12 @@
+/*
+ * Copyright 2021 Igor Nuzhnov
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 package com.nuzigor.spark.sql.h3
 
 import org.apache.spark.sql.SparkSessionExtensions
 import org.apache.spark.sql.catalyst.FunctionIdentifier
-import org.apache.spark.sql.catalyst.analysis.FunctionRegistry.FunctionBuilder
 import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionInfo}
 
 class H3SqlExtensions extends (SparkSessionExtensions => Unit) {
