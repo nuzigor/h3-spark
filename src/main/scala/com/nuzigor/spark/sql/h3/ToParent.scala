@@ -7,7 +7,7 @@ package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.h3.H3
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
-import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ImplicitCastInputTypes, NullIntolerant}
+import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
 import org.apache.spark.sql.types.{DataType, IntegerType, LongType}
 
 /**
@@ -16,6 +16,21 @@ import org.apache.spark.sql.types.{DataType, IntegerType, LongType}
  * @param h3Expr h3 index.
  * @param parentResolutionExpr parent resolution.
  */
+@ExpressionDescription(
+  usage = "_FUNC_(h3, resolution) - Returns the parent (coarser) index containing h3.",
+  arguments = """
+       Arguments:
+         * h3 - child h3 index
+             622485130170302463l
+         * resolution - parent index resolution
+             9
+     """,
+  examples = """
+       Examples:
+         > SELECT _FUNC_(622485130170302463l, 9);
+          617981530542964735
+     """,
+  since = "0.1.0")
 case class ToParent(h3Expr: Expression, parentResolutionExpr: Expression)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 

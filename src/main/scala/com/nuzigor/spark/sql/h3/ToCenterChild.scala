@@ -7,7 +7,7 @@ package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.h3.H3
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
-import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ImplicitCastInputTypes, NullIntolerant}
+import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
 import org.apache.spark.sql.types.{ArrayType, DataType, IntegerType, LongType}
 
 import scala.collection.JavaConverters._
@@ -18,6 +18,21 @@ import scala.collection.JavaConverters._
  * @param h3Expr h3 index.
  * @param childResolutionExpr child resolution.
  */
+@ExpressionDescription(
+  usage = "_FUNC_(h3, resolution) - Returns the center child of h3 index at child resolution.",
+  arguments = """
+       Arguments:
+         * h3 - parent h3 index
+             622485130170302463l
+         * resolution - child index resolution
+             12
+     """,
+  examples = """
+       Examples:
+         > SELECT _FUNC_(622485130170302463l, 12);
+          631492329425011199
+     """,
+  since = "0.1.0")
 case class ToCenterChild(h3Expr: Expression, childResolutionExpr: Expression)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 

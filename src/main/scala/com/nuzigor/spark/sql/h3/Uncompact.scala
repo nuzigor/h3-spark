@@ -7,7 +7,7 @@ package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.h3.H3
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
-import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ImplicitCastInputTypes, NullIntolerant}
+import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
 import org.apache.spark.sql.catalyst.util.{ArrayData, GenericArrayData}
 import org.apache.spark.sql.types.{ArrayType, DataType, IntegerType, LongType}
 
@@ -17,9 +17,25 @@ import scala.collection.JavaConverters._
 /**
  * Uncompacts the set of indices using the target resolution.
  *
- * @param h3Expr h3 origin.
+ * @param h3Expr h3 indices.
  * @param resolutionExpr h3 resolution
  */
+@ExpressionDescription(
+  usage = "_FUNC_(h3, resolution) - Un-compacts the set of indices using the target resolution.",
+  arguments = """
+       Arguments:
+         * h3 - array of h3 indices
+             array(622485130170302463l, 622485130170957823l)
+     """,
+  examples = """
+       Examples:
+         > SELECT _FUNC_(h3_compact(h3_k_ring(622485130170302463l, 3)), 10);
+          [622485130170761215,622485130170793983,622485130171482111,622485130151526399,...]
+         > SELECT _FUNC_(array(0), 10);
+          []
+     """,
+  group = "array_funcs",
+  since = "0.1.0")
 case class Uncompact(h3Expr: Expression, resolutionExpr: Expression)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
