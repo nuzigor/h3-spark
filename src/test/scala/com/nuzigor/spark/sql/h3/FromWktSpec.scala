@@ -31,4 +31,6 @@ class FromWktSpec extends H3Spec {
     val spatialDf = sparkSession.sql("SELECT h3_from_wkt('POINT (-0.2983396 35.8466667)', null)")
     assert(spatialDf.first().isNullAt(0))
   }
+
+  protected override def functionName: String = "h3_from_wkt"
 }

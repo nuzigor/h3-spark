@@ -22,4 +22,6 @@ class GetResolutionSpec extends H3Spec {
     val spatialDf = sparkSession.sql(s"SELECT h3_get_resolution(-1)")
     assert(!spatialDf.first().isNullAt(0))
   }
+
+  protected override def functionName: String = "h3_get_resolution"
 }

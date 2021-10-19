@@ -29,4 +29,6 @@ class KRingSpec extends H3Spec {
     val spatialDf = sparkSession.sql(s"SELECT h3_k_ring(0l, 2)")
     assert(!spatialDf.first().isNullAt(0))
   }
+
+  protected override def functionName: String = "h3_k_ring"
 }

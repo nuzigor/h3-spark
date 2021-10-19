@@ -23,4 +23,6 @@ class ToParentSpec extends H3Spec {
     val spatialDf = sparkSession.sql(s"SELECT h3_to_parent(${h3}l, null)")
     assert(spatialDf.first().isNullAt(0))
   }
+
+  protected override def functionName: String = "h3_to_parent"
 }

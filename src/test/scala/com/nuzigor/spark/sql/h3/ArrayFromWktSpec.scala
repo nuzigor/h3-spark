@@ -88,4 +88,6 @@ class ArrayFromWktSpec extends H3Spec {
     val spatialDf = sparkSession.sql("SELECT h3_array_from_wkt('POLYGON ((3 -1, 3 -1.1, 3.1 1.1, 3 -1))', null)")
     assert(spatialDf.first().isNullAt(0))
   }
+
+  protected override def functionName: String = "h3_array_from_wkt"
 }
