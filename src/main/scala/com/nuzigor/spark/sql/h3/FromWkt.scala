@@ -7,17 +7,34 @@ package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.h3.H3
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
-import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ImplicitCastInputTypes, Literal, NullIntolerant}
+import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, Literal, NullIntolerant}
 import org.apache.spark.sql.types.{DataType, IntegerType, LongType, StringType}
 import org.apache.spark.unsafe.types.UTF8String
 import org.locationtech.jts.io.{ParseException, WKTReader}
 
 /**
- * Return h3 address from a WKT string
+ * Return h3 address from a WKT string.
  *
  * @param wktExpr point in WKT format.
  * @param resolutionExpr h3 resolution
  */
+@ExpressionDescription(
+  usage = "_FUNC_(wkt, resolution) - Returns h3 address from a WKT string at target resolution.",
+  arguments = """
+       Arguments:
+         * wkt - point object in WKT format
+             'POINT (-164.64459d 81.34534d)'
+         * resolution - h3 index resolution
+             9
+     """,
+  examples = """
+       Examples:
+         > SELECT _FUNC_('POINT (-164.64459d 81.34534d)', 9);
+          617057114733412351
+         > SELECT _FUNC_('POINT EMPTY', 9);
+          NULL
+     """,
+  since = "0.1.0")
 case class FromWkt(wktExpr: Expression, resolutionExpr: Expression)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 

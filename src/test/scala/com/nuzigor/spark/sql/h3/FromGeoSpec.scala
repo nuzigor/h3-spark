@@ -26,4 +26,6 @@ class FromGeoSpec extends H3Spec {
     val spatialDf = sparkSession.sql("SELECT h3_from_geo(35.8466667d, -0.2983396d, null)")
     assert(spatialDf.first().isNullAt(0))
   }
+
+  protected override def functionName: String = "h3_from_geo"
 }

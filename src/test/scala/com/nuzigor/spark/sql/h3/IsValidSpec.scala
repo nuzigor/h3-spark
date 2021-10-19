@@ -23,4 +23,6 @@ class IsValidSpec extends H3Spec {
     val spatialDf = sparkSession.sql("SELECT h3_is_valid(null)")
     assert(spatialDf.first().isNullAt(0))
   }
+
+  protected override def functionName: String = "h3_is_valid"
 }

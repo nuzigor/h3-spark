@@ -34,4 +34,6 @@ class UncompactSpec extends H3Spec {
     val spatialDf = sparkSession.sql(s"SELECT h3_uncompact(array(0, 2), 3)")
     assert(!spatialDf.first().isNullAt(0))
   }
+
+  protected override def functionName: String = "h3_uncompact"
 }

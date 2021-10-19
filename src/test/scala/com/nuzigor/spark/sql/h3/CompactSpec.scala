@@ -28,4 +28,6 @@ class CompactSpec extends H3Spec {
     val spatialDf = sparkSession.sql(s"SELECT h3_compact(array(0, -1))")
     assert(!spatialDf.first().isNullAt(0))
   }
+
+  protected override def functionName: String = "h3_compact"
 }

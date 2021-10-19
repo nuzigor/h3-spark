@@ -7,7 +7,7 @@ package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.h3.H3
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
-import org.apache.spark.sql.catalyst.expressions.{Expression, ImplicitCastInputTypes, NullIntolerant, UnaryExpression}
+import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant, UnaryExpression}
 import org.apache.spark.sql.catalyst.util.{ArrayData, GenericArrayData}
 import org.apache.spark.sql.types.{ArrayType, DataType, LongType}
 
@@ -17,8 +17,24 @@ import scala.collection.JavaConverters._
 /**
  * Compacts the set of indices as best as possible.
  *
- * @param h3Expr h3 origin.
+ * @param h3Expr h3 indices.
  */
+@ExpressionDescription(
+  usage = "_FUNC_(expr) - Returns the compacted `expr` array on indices.",
+  arguments = """
+       Arguments:
+         * expr - array of h3 indices
+             array(622485130170302463l, 622485130170957823l)
+     """,
+  examples = """
+       Examples:
+         > SELECT _FUNC_(h3_k_ring(622485130170302463l, 3));
+          [622485130170761215,622485130170793983,622485130171482111,622485130151526399,...]
+         > SELECT _FUNC_(array(0));
+          []
+     """,
+  group = "array_funcs",
+  since = "0.1.0")
 case class Compact(h3Expr: Expression)
   extends UnaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
