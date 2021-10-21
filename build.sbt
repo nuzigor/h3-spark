@@ -3,14 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Global / onChangedBuildSource := ReloadOnSourceChanges
-
-ThisBuild / organization := "com.nuzigor"
-ThisBuild / scalaVersion := "2.12.15"
+ThisBuild / organization := "io.github.nuzigor"
+ThisBuild / organizationName := "nuzigor"
+//ThisBuild / name := "h3-spark"
+ThisBuild / description := "Brings H3 - Hexagonal hierarchical geospatial indexing system support to Apache Spark SQL."
+ThisBuild / homepage := Some(url("https://github.com/nuzigor/h3-spark"))
+ThisBuild / licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
+ThisBuild / versionScheme := Some("semver-spec")
 ThisBuild / version      := "0.1.0-SNAPSHOT"
-ThisBuild / name         := "h3-spark"
-ThisBuild / licenses     := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
-ThisBuild / developers   := List(
+
+ThisBuild / developers := List(
   Developer(
     "nuzigor",
     "Igor Nuzhnov",
@@ -19,12 +21,31 @@ ThisBuild / developers   := List(
   )
 )
 
-/*
+ThisBuild / scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/nuzigor/h3-spark"),
+    "scm:git@github.com:nuzigor/h3-spark.git"
+  )
+)
+
+ThisBuild / pomIncludeRepository := { _ => false }
+ThisBuild / publishTo := {
+  val nexus = "https://s01.oss.sonatype.org/"
+  if (isSnapshot.value) {
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  }
+  else {
+    Some("releases" at nexus + "service/local/staging/deploy/maven2")
+  }
+}
+ThisBuild / publishMavenStyle := true
+
+ThisBuild / scalaVersion := "2.12.15"
+
 lazy val root = (project in file("."))
   .settings(
     name := "h3-spark"
   )
-*/
 
 val sparkVersion = "3.1.2"
 val h3Version = "3.7.1"
