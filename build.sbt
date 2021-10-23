@@ -5,7 +5,6 @@
 
 ThisBuild / organization := "io.github.nuzigor"
 ThisBuild / organizationName := "nuzigor"
-//ThisBuild / name := "h3-spark"
 ThisBuild / description := "Brings H3 - Hexagonal hierarchical geospatial indexing system support to Apache Spark SQL."
 ThisBuild / homepage := Some(url("https://github.com/nuzigor/h3-spark"))
 ThisBuild / licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))

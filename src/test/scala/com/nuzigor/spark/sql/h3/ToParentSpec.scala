@@ -5,6 +5,9 @@
 
 package com.nuzigor.spark.sql.h3
 
+import com.nuzigor.spark.sql.h3.functions._
+import org.apache.spark.sql.functions.column
+
 class ToParentSpec extends H3Spec {
   it should "return h3 parent index" in {
     val h3 = 622485130170302463L
@@ -22,6 +25,16 @@ class ToParentSpec extends H3Spec {
     val h3 = 622485130170302463L
     val spatialDf = sparkSession.sql(s"SELECT h3_to_parent(${h3}l, null)")
     assert(spatialDf.first().isNullAt(0))
+  }
+
+  it should "support compiled function" in {
+    import sparkSession.implicits._
+    val h3 = 622485130170302463L
+    val df = Seq((h3, 1)).toDF("h3", "id")
+    val resolution = 8
+    val result = df.select(h3_to_parent(column("h3"), resolution).alias("parent"))
+    val parent = result.first().getAs[Long](0)
+    assert(parent === 613477930917429247L)
   }
 
   protected override def functionName: String = "h3_to_parent"

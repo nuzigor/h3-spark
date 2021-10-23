@@ -5,6 +5,9 @@
 
 package com.nuzigor.spark.sql.h3
 
+import com.nuzigor.spark.sql.h3.functions._
+import org.apache.spark.sql.functions.column
+
 class ArrayFromWktSpec extends H3Spec {
   it should "convert WKT polygon to h3" in {
     val spatialDf = sparkSession.sql("SELECT h3_array_from_wkt('POLYGON ((3 -1, 3 -1.1, 3.1 1.1, 3 -1))', 7)")
@@ -87,6 +90,15 @@ class ArrayFromWktSpec extends H3Spec {
   it should "return null for null resolution" in {
     val spatialDf = sparkSession.sql("SELECT h3_array_from_wkt('POLYGON ((3 -1, 3 -1.1, 3.1 1.1, 3 -1))', null)")
     assert(spatialDf.first().isNullAt(0))
+  }
+
+  it should "support compiled function" in {
+    import sparkSession.implicits._
+    val df = Seq(("POLYGON ((3 -1, 3 -1.1, 3.1 1.1, 3 -1))", 1)).toDF("wkt", "id")
+    val resolution = 7
+    val result = df.select(h3_array_from_wkt(column("wkt"), resolution).alias("h3"))
+    val h3 = result.first().getAs[Seq[Long]](0)
+    assert(h3.nonEmpty)
   }
 
   protected override def functionName: String = "h3_array_from_wkt"
