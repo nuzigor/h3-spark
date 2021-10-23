@@ -5,6 +5,9 @@
 
 package com.nuzigor.spark.sql.h3
 
+import com.nuzigor.spark.sql.h3.functions._
+import org.apache.spark.sql.functions.column
+
 class DistanceSpec extends H3Spec {
   it should "return distance in hexes between start and end indices" in {
     val start = 622485130170957823L
@@ -36,6 +39,14 @@ class DistanceSpec extends H3Spec {
     val start = 622485130170957823L
     val spatialDf = sparkSession.sql(s"SELECT h3_distance(${start}l, null)")
     assert(spatialDf.first().isNullAt(0))
+  }
+
+  it should "support compiled function" in {
+    import sparkSession.implicits._
+    val df = Seq((622485130170957823L, 622485130170302463L)).toDF("start", "end")
+    val result = df.select(h3_distance(column("start"), column("end")).alias("h3"))
+    val distance = result.first().getAs[Int](0)
+    assert(distance === 4)
   }
 
   protected override def functionName: String = "h3_distance"

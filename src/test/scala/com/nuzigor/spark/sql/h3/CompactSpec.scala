@@ -5,6 +5,9 @@
 
 package com.nuzigor.spark.sql.h3
 
+import com.nuzigor.spark.sql.h3.functions._
+import org.apache.spark.sql.functions.column
+
 class CompactSpec extends H3Spec {
   it should "compact h3 indices" in {
     val h3 = 622485130170302463L
@@ -27,6 +30,15 @@ class CompactSpec extends H3Spec {
   it should "not return null for invalid h3" in {
     val spatialDf = sparkSession.sql(s"SELECT h3_compact(array(0, -1))")
     assert(!spatialDf.first().isNullAt(0))
+  }
+
+  it should "support compiled function" in {
+    import sparkSession.implicits._
+    val df = Seq((622485130170302463L, 1)).toDF("h3", "id")
+    val resolution = 3
+    val result = df.select(h3_compact(h3_k_ring(column("h3"), resolution)).alias("h3"))
+    val compacted = result.first().getAs[Seq[Long]](0)
+    assert(compacted.size < 30)
   }
 
   protected override def functionName: String = "h3_compact"
