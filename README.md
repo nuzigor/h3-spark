@@ -3,6 +3,7 @@
 Brings [H3 - Hexagonal hierarchical geospatial indexing system](https://h3geo.org/) support to [Apache Spark SQL](https://spark.apache.org/)
 
 ![Scala CI](https://github.com/nuzigor/h3-spark/actions/workflows/scala.yml/badge.svg)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 Installation
 ------------
