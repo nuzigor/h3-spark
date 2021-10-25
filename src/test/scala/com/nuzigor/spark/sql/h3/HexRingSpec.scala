@@ -43,5 +43,11 @@ class HexRingSpec extends H3Spec {
     assert(!ring.contains(h3))
   }
 
+  it should "return null for indices around pentagon" in {
+    val h3 = 580986342163349503L
+    val spatialDf = sparkSession.sql(s"SELECT h3_hex_ring(${h3}l, 2)")
+    assert(spatialDf.first().isNullAt(0))
+  }
+
   protected override def functionName: String = "h3_hex_ring"
 }

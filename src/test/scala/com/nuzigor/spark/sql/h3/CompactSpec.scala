@@ -41,5 +41,13 @@ class CompactSpec extends H3Spec {
     assert(compacted.size < 30)
   }
 
+  it should "return null for duplicate h3 indices" in {
+    val h3 = 622485130170302463L
+    val ringCall = s"h3_k_ring(${h3}l, 5)"
+    val spatialDf = sparkSession.sql(s"SELECT h3_compact(concat($ringCall, $ringCall))")
+    val compacted = spatialDf.first().getAs[Seq[Long]](0)
+    assert(compacted.size < 30)
+  }
+
   protected override def functionName: String = "h3_compact"
 }

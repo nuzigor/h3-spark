@@ -55,5 +55,12 @@ class LineSpec extends H3Spec {
     assert(line.contains(end))
   }
 
+  it should "return null for indices around pentagon" in {
+    val start = 612630286896726015L
+    val end = 612630286919794687L
+    val spatialDf = sparkSession.sql(s"SELECT h3_line(${start}l, ${end}l)")
+    assert(spatialDf.first().isNullAt(0))
+  }
+
   protected override def functionName: String = "h3_line"
 }
