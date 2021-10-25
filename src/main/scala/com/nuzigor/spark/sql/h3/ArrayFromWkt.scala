@@ -63,7 +63,7 @@ case class ArrayFromWkt(wktExpr: Expression, resolutionExpr: Expression)
   override def left: Expression = wktExpr
   override def right: Expression = resolutionExpr
   override def inputTypes: Seq[DataType] = Seq(StringType, IntegerType)
-  override def dataType: DataType = ArrayType(LongType)
+  override def dataType: DataType = ArrayType(LongType, containsNull = false)
   override def nullable: Boolean = true
 
   override protected def nullSafeEval(wktAny: Any, resolutionAny: Any): Any = {

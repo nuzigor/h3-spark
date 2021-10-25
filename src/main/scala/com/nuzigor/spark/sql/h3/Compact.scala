@@ -40,7 +40,7 @@ case class Compact(h3Expr: Expression)
 
   override def child: Expression = h3Expr
   override def inputTypes: Seq[DataType] = Seq(ArrayType(LongType))
-  override def dataType: DataType = ArrayType(LongType)
+  override def dataType: DataType = ArrayType(LongType, containsNull = false)
   override def nullable: Boolean = child.nullable || child.dataType.asInstanceOf[ArrayType].containsNull
 
   override protected def nullSafeEval(h3Any: Any): Any = {

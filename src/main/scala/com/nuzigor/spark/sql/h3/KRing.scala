@@ -41,7 +41,7 @@ case class KRing(originExpr: Expression, kExpr: Expression)
   override def left: Expression = originExpr
   override def right: Expression = kExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, IntegerType)
-  override def dataType: DataType = ArrayType(LongType)
+  override def dataType: DataType = ArrayType(LongType, containsNull = false)
 
   override protected def nullSafeEval(originAny: Any, kAny: Any): Any = {
     val origin = originAny.asInstanceOf[Long]

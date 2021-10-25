@@ -41,7 +41,7 @@ case class ToChildren(h3Expr: Expression, childResolutionExpr: Expression)
   override def left: Expression = h3Expr
   override def right: Expression = childResolutionExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, IntegerType)
-  override def dataType: DataType = ArrayType(LongType)
+  override def dataType: DataType = ArrayType(LongType, containsNull = false)
 
   override protected def nullSafeEval(h3Any: Any, childResolutionAny: Any): Any = {
     val h3 = h3Any.asInstanceOf[Long]

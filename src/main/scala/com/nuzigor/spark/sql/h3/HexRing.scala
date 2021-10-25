@@ -42,7 +42,7 @@ case class HexRing(originExpr: Expression, kExpr: Expression)
   override def left: Expression = originExpr
   override def right: Expression = kExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, IntegerType)
-  override def dataType: DataType = ArrayType(LongType)
+  override def dataType: DataType = ArrayType(LongType, containsNull = false)
   override def nullable: Boolean = true
 
   override protected def nullSafeEval(originAny: Any, kAny: Any): Any = {

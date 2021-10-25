@@ -42,7 +42,7 @@ case class Line(startExpr: Expression, endExpr: Expression)
   override def left: Expression = startExpr
   override def right: Expression = endExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, LongType)
-  override def dataType: DataType = ArrayType(LongType)
+  override def dataType: DataType = ArrayType(LongType, containsNull = false)
   override def nullable: Boolean = true
 
   override protected def nullSafeEval(startAny: Any, endAny: Any): Any = {

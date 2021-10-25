@@ -42,7 +42,7 @@ case class Uncompact(h3Expr: Expression, resolutionExpr: Expression)
   override def left: Expression = h3Expr
   override def right: Expression = resolutionExpr
   override def inputTypes: Seq[DataType] = Seq(ArrayType(LongType), IntegerType)
-  override def dataType: DataType = ArrayType(LongType)
+  override def dataType: DataType = ArrayType(LongType, containsNull = false)
   override def nullable: Boolean = left.nullable || right.nullable || left.dataType.asInstanceOf[ArrayType].containsNull
 
   override protected def nullSafeEval(h3Any: Any, resolutionAny: Any): Any = {
