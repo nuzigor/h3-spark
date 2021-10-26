@@ -8,6 +8,7 @@ package com.nuzigor.spark.sql.h3
 import com.nuzigor.h3.H3
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, Literal, NullIntolerant}
+import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.types.{DataType, IntegerType, LongType, StringType}
 import org.apache.spark.unsafe.types.UTF8String
 import org.locationtech.jts.io.{ParseException, WKTReader}
@@ -35,8 +36,12 @@ import org.locationtech.jts.io.{ParseException, WKTReader}
           NULL
      """,
   since = "0.1.0")
-case class FromWkt(wktExpr: Expression, resolutionExpr: Expression)
+case class FromWkt(wktExpr: Expression, resolutionExpr: Expression,
+                   failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+
+  def this(wktExpr: Expression, resolutionExpr: Expression) =
+    this(wktExpr, resolutionExpr, SQLConf.get.ansiEnabled)
 
   override def left: Expression = wktExpr
   override def right: Expression = resolutionExpr
@@ -61,7 +66,8 @@ case class FromWkt(wktExpr: Expression, resolutionExpr: Expression)
         }
       }
     } catch {
-      case _: ParseException => null
+      case _: ParseException if !failOnError => null
+      case _: IllegalArgumentException if !failOnError => null
     }
   }
 }

@@ -12,6 +12,7 @@ import com.uber.h3core.util.GeoCoord
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
 import org.apache.spark.sql.catalyst.util.GenericArrayData
+import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.types._
 import org.apache.spark.unsafe.types.UTF8String
 import org.locationtech.jts.geom._
@@ -57,8 +58,12 @@ import scala.collection.JavaConverters._
      """,
   group = "array_funcs",
   since = "0.1.0")
-case class ArrayFromWkt(wktExpr: Expression, resolutionExpr: Expression)
+case class ArrayFromWkt(wktExpr: Expression, resolutionExpr: Expression,
+                        failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+
+  def this(wktExpr: Expression, resolutionExpr: Expression) =
+    this(wktExpr, resolutionExpr, SQLConf.get.ansiEnabled)
 
   override def left: Expression = wktExpr
   override def right: Expression = resolutionExpr
@@ -80,8 +85,9 @@ case class ArrayFromWkt(wktExpr: Expression, resolutionExpr: Expression)
         new GenericArrayData(result)
       }
     } catch {
-      case _: ParseException => null
-      case _: LineUndefinedException => null
+      case _: ParseException if !failOnError => null
+      case _: LineUndefinedException if !failOnError => null
+      case _: IllegalArgumentException if !failOnError => null
     }
   }
 

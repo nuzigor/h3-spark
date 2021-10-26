@@ -8,6 +8,7 @@ package com.nuzigor.spark.sql.h3
 import com.nuzigor.h3.H3
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
+import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.types.{ArrayType, DataType, IntegerType, LongType}
 
 import scala.collection.JavaConverters._
@@ -33,17 +34,27 @@ import scala.collection.JavaConverters._
           631492329425011199
      """,
   since = "0.1.0")
-case class ToCenterChild(h3Expr: Expression, childResolutionExpr: Expression)
+case class ToCenterChild(h3Expr: Expression, childResolutionExpr: Expression,
+                         failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+
+  def this(h3Expr: Expression, childResolutionExpr: Expression) =
+    this(h3Expr, childResolutionExpr, SQLConf.get.ansiEnabled)
 
   override def left: Expression = h3Expr
   override def right: Expression = childResolutionExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, IntegerType)
   override def dataType: DataType = LongType
+  override def nullable: Boolean = if (failOnError) super.nullable else true
 
   override protected def nullSafeEval(h3Any: Any, childResolutionAny: Any): Any = {
     val h3 = h3Any.asInstanceOf[Long]
     val childResolution = childResolutionAny.asInstanceOf[Int]
-    H3.getInstance().h3ToCenterChild(h3, childResolution)
+    try {
+      H3.getInstance().h3ToCenterChild(h3, childResolution)
+    }
+    catch {
+      case _: IllegalArgumentException if !failOnError => null
+    }
   }
 }

@@ -111,12 +111,12 @@ class ArrayFromWktSpec extends H3Spec {
 
   it should "fail for invalid parameters when ansi enabled" in {
     withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
-      assertThrows[Throwable] {
-        Seq(
-          "SELECT h3_array_from_wkt('bla bla', 10)",
-          "SELECT h3_array_from_wkt('POLYGON ((3 -1, 3 -1.1, 3.1 1.1, 3 -1))', -1)",
-          "SELECT h3_array_from_wkt('POLYGON ((3 -1, 3 -1.1, 3.1 1.1, 3 -1))', 16)",
-        ).foreach { script =>
+      Seq(
+        "SELECT h3_array_from_wkt('bla bla', 10)",
+        "SELECT h3_array_from_wkt('POLYGON ((3 -1, 3 -1.1, 3.1 1.1, 3 -1))', -1)",
+        "SELECT h3_array_from_wkt('POLYGON ((3 -1, 3 -1.1, 3.1 1.1, 3 -1))', 16)",
+      ).foreach { script =>
+        assertThrows[Throwable] {
           sparkSession.sql(script).collect()
         }
       }

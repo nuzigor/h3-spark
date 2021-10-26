@@ -62,10 +62,15 @@ class ToChildrenSpec extends H3Spec {
   }
 
   it should "fail for invalid parameters when ansi enabled" in {
+    val h3 = 622485130170302463L
     withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
-      assertThrows[IllegalArgumentException] {
-        val h3 = 622485130170302463L
-        sparkSession.sql(s"SELECT h3_to_children(${h3}l, -1)").collect()
+      Seq(
+        s"SELECT h3_to_children(${h3}l, -1)",
+        s"SELECT h3_to_children(${h3}l, -6)"
+      ).foreach { script =>
+        assertThrows[IllegalArgumentException] {
+          sparkSession.sql(script).collect()
+        }
       }
     }
   }

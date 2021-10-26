@@ -9,6 +9,7 @@ import com.nuzigor.h3.H3
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant, UnaryExpression}
 import org.apache.spark.sql.catalyst.util.{ArrayData, GenericArrayData}
+import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.types.{ArrayType, DataType, LongType}
 
 import java.util
@@ -35,13 +36,16 @@ import scala.collection.JavaConverters._
      """,
   group = "array_funcs",
   since = "0.1.0")
-case class Compact(h3Expr: Expression)
+case class Compact(h3Expr: Expression,
+                   failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends UnaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+
+  def this(h3Expr: Expression) = this(h3Expr, SQLConf.get.ansiEnabled)
 
   override def child: Expression = h3Expr
   override def inputTypes: Seq[DataType] = Seq(ArrayType(LongType))
   override def dataType: DataType = ArrayType(LongType, containsNull = false)
-  override def nullable: Boolean = child.nullable || child.dataType.asInstanceOf[ArrayType].containsNull
+  override def nullable: Boolean = if (failOnError) child.nullable || child.dataType.asInstanceOf[ArrayType].containsNull else true
 
   override protected def nullSafeEval(h3Any: Any): Any = {
     val list = new util.ArrayList[java.lang.Long]()
@@ -57,7 +61,11 @@ case class Compact(h3Expr: Expression)
     if (nullFound) {
       null
     } else {
-      new GenericArrayData(H3.getInstance().compact(list).asScala)
+      try {
+        new GenericArrayData(H3.getInstance().compact(list).asScala)
+      } catch {
+        case _: IllegalArgumentException if !failOnError => null
+      }
     }
   }
 }

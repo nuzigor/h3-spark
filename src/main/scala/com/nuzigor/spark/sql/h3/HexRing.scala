@@ -10,6 +10,7 @@ import com.uber.h3core.exceptions.PentagonEncounteredException
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
 import org.apache.spark.sql.catalyst.util.GenericArrayData
+import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.types.{ArrayType, DataType, IntegerType, LongType}
 
 import scala.collection.JavaConverters._
@@ -36,14 +37,18 @@ import scala.collection.JavaConverters._
      """,
   group = "array_funcs",
   since = "0.1.0")
-case class HexRing(originExpr: Expression, kExpr: Expression)
+case class HexRing(originExpr: Expression, kExpr: Expression,
+                   failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+
+  def this(originExpr: Expression, kExpr: Expression) =
+    this(originExpr, kExpr, SQLConf.get.ansiEnabled)
 
   override def left: Expression = originExpr
   override def right: Expression = kExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, IntegerType)
   override def dataType: DataType = ArrayType(LongType, containsNull = false)
-  override def nullable: Boolean = true
+  override def nullable: Boolean = if (failOnError) super.nullable else true
 
   override protected def nullSafeEval(originAny: Any, kAny: Any): Any = {
     val origin = originAny.asInstanceOf[Long]
@@ -51,7 +56,7 @@ case class HexRing(originExpr: Expression, kExpr: Expression)
     try {
       new GenericArrayData(H3.getInstance().hexRing(origin, k).asScala)
     } catch {
-      case _: PentagonEncounteredException => null
+      case _: PentagonEncounteredException if !failOnError => null
     }
   }
 }
