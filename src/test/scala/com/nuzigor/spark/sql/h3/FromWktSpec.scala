@@ -44,5 +44,12 @@ class FromWktSpec extends H3Spec {
     assert(h3 === 0x8A382ED85C37FFFL)
   }
 
+  it should "return null for invalid resolution" in {
+    invalidResolutions.foreach { resolution =>
+      val spatialDf = sparkSession.sql(s"SELECT h3_from_wkt('POINT (-0.2983396 35.8466667)', $resolution)")
+      assert(spatialDf.first().isNullAt(0))
+    }
+  }
+
   protected override def functionName: String = "h3_from_wkt"
 }

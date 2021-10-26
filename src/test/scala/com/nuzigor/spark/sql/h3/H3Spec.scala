@@ -7,6 +7,7 @@ package com.nuzigor.spark.sql.h3
 
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.internal.SQLConf
 import org.scalatest.flatspec.AnyFlatSpec
 
 abstract class H3Spec extends AnyFlatSpec {
@@ -28,6 +29,10 @@ abstract class H3Spec extends AnyFlatSpec {
   protected val warehouseLocation: String = System.getProperty("user.dir") + "/target/"
   protected val resourceFolder: String = System.getProperty("user.dir") + "/../core/src/test/resources/"
 
+  // scalastyle:off magic.number
+  protected val invalidResolutions = Seq(-1, 16)
+  // scalastyle:on magic.number
+
   protected lazy val sparkSession: SparkSession = SparkSession
     .builder()
     .master("local[*]")
@@ -36,4 +41,28 @@ abstract class H3Spec extends AnyFlatSpec {
     .config("spark.sql.shuffle.partitions", "1")
     .withExtensions(new H3SqlExtensions().apply(_))
     .getOrCreate()
+
+  protected def withSQLConf(pairs: (String, String)*)(f: => Unit): Unit = {
+    val conf = SQLConf.get
+    val (keys, values) = pairs.unzip
+    val currentValues = keys.map { key =>
+      if (conf.contains(key)) {
+        Some(conf.getConfString(key))
+      } else {
+        None
+      }
+    }
+    (keys, values).zipped.foreach { (k, v) =>
+      if (SQLConf.staticConfKeys.contains(k)) {
+        throw new Exception(s"Cannot modify the value of a static config: $k")
+      }
+      conf.setConfString(k, v)
+    }
+    try f finally {
+      keys.zip(currentValues).foreach {
+        case (key, Some(value)) => conf.setConfString(key, value)
+        case (key, None) => conf.unsetConf(key)
+      }
+    }
+  }
 }

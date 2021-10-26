@@ -37,5 +37,19 @@ class ToParentSpec extends H3Spec {
     assert(parent === 613477930917429247L)
   }
 
+  it should "return null for lower parent resolution" in {
+    val h3 = 622485130170302463L
+    val spatialDf = sparkSession.sql(s"SELECT h3_to_parent(${h3}l, 12)")
+    assert(spatialDf.first().isNullAt(0))
+  }
+
+  it should "return null for invalid resolution" in {
+    val h3 = 622485130170302463L
+    invalidResolutions.foreach { resolution =>
+      val spatialDf = sparkSession.sql(s"SELECT h3_to_parent(${h3}l, $resolution)")
+      assert(spatialDf.first().isNullAt(0))
+    }
+  }
+
   protected override def functionName: String = "h3_to_parent"
 }

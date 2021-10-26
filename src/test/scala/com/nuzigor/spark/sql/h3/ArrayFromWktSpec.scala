@@ -101,5 +101,12 @@ class ArrayFromWktSpec extends H3Spec {
     assert(h3.nonEmpty)
   }
 
+  it should "return null for invalid resolution" in {
+    invalidResolutions.foreach { resolution =>
+      val spatialDf = sparkSession.sql(s"SELECT h3_array_from_wkt('POLYGON ((3 -1, 3 -1.1, 3.1 1.1, 3 -1))', $resolution)")
+      assert(spatialDf.first().isNullAt(0))
+    }
+  }
+
   protected override def functionName: String = "h3_array_from_wkt"
 }

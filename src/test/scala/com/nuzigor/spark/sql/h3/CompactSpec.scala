@@ -45,8 +45,7 @@ class CompactSpec extends H3Spec {
     val h3 = 622485130170302463L
     val ringCall = s"h3_k_ring(${h3}l, 5)"
     val spatialDf = sparkSession.sql(s"SELECT h3_compact(concat($ringCall, $ringCall))")
-    val compacted = spatialDf.first().getAs[Seq[Long]](0)
-    assert(compacted.size < 30)
+    assert(spatialDf.first().isNullAt(0))
   }
 
   protected override def functionName: String = "h3_compact"

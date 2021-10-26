@@ -39,5 +39,12 @@ class FromGeoSpec extends H3Spec {
     assert(h3 === 0x8A382ED85C37FFFL)
   }
 
+  it should "return null for invalid resolution" in {
+    invalidResolutions.foreach { resolution =>
+      val spatialDf = sparkSession.sql(s"SELECT h3_from_geo(35.8466667d, -0.2983396d, $resolution)")
+      assert(spatialDf.first().isNullAt(0))
+    }
+  }
+
   protected override def functionName: String = "h3_from_geo"
 }

@@ -48,5 +48,13 @@ class UncompactSpec extends H3Spec {
     assert(uncompacted.size > 7)
   }
 
+  it should "return null for invalid resolution" in {
+    val h3 = 622485130170302463L
+    invalidResolutions.foreach { resolution =>
+      val spatialDf = sparkSession.sql(s"SELECT h3_uncompact(h3_k_ring(${h3}l, 1), $resolution)")
+      assert(spatialDf.first().isNullAt(0))
+    }
+  }
+
   protected override def functionName: String = "h3_uncompact"
 }
