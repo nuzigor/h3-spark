@@ -43,6 +43,7 @@ abstract class H3Spec extends AnyFlatSpec {
     .getOrCreate()
 
   protected def withSQLConf(pairs: (String, String)*)(f: => Unit): Unit = {
+    SparkSession.setActiveSession(sparkSession)
     val conf = SQLConf.get
     val (keys, values) = pairs.unzip
     val currentValues = keys.map { key =>

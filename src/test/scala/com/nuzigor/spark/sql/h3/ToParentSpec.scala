@@ -7,6 +7,7 @@ package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.spark.sql.h3.functions._
 import org.apache.spark.sql.functions.column
+import org.apache.spark.sql.internal.SQLConf
 
 class ToParentSpec extends H3Spec {
   it should "return h3 parent index" in {
@@ -48,6 +49,15 @@ class ToParentSpec extends H3Spec {
     invalidResolutions.foreach { resolution =>
       val spatialDf = sparkSession.sql(s"SELECT h3_to_parent(${h3}l, $resolution)")
       assert(spatialDf.first().isNullAt(0))
+    }
+  }
+
+  it should "fail for invalid parameters when ansi enabled" in {
+    withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
+      assertThrows[IllegalArgumentException] {
+        val h3 = 622485130170302463L
+        sparkSession.sql(s"SELECT h3_to_parent(${h3}l, -1)").collect()
+      }
     }
   }
 
