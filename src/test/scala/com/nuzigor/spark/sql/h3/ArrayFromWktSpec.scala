@@ -7,6 +7,7 @@ package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.spark.sql.h3.functions._
 import org.apache.spark.sql.functions.column
+import org.apache.spark.sql.internal.SQLConf
 
 class ArrayFromWktSpec extends H3Spec {
   it should "convert WKT polygon to h3" in {
@@ -99,6 +100,27 @@ class ArrayFromWktSpec extends H3Spec {
     val result = df.select(h3_array_from_wkt(column("wkt"), resolution).alias("h3"))
     val h3 = result.first().getAs[Seq[Long]](0)
     assert(h3.nonEmpty)
+  }
+
+  it should "return null for invalid resolution" in {
+    invalidResolutions.foreach { resolution =>
+      val spatialDf = sparkSession.sql(s"SELECT h3_array_from_wkt('POLYGON ((3 -1, 3 -1.1, 3.1 1.1, 3 -1))', $resolution)")
+      assert(spatialDf.first().isNullAt(0))
+    }
+  }
+
+  it should "fail for invalid parameters when ansi enabled" in {
+    withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
+      Seq(
+        "SELECT h3_array_from_wkt('bla bla', 10)",
+        "SELECT h3_array_from_wkt('POLYGON ((3 -1, 3 -1.1, 3.1 1.1, 3 -1))', -1)",
+        "SELECT h3_array_from_wkt('POLYGON ((3 -1, 3 -1.1, 3.1 1.1, 3 -1))', 16)",
+      ).foreach { script =>
+        assertThrows[Throwable] {
+          sparkSession.sql(script).collect()
+        }
+      }
+    }
   }
 
   protected override def functionName: String = "h3_array_from_wkt"

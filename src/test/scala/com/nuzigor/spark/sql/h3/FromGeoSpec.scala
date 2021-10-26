@@ -7,6 +7,7 @@ package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.spark.sql.h3.functions._
 import org.apache.spark.sql.functions.column
+import org.apache.spark.sql.internal.SQLConf
 
 class FromGeoSpec extends H3Spec {
   it should "convert point to h3" in {
@@ -37,6 +38,21 @@ class FromGeoSpec extends H3Spec {
     val result = df.select(h3_from_geo(column("lat"), column("lng"), resolution).alias("h3"))
     val h3 = result.first().getAs[Long](0)
     assert(h3 === 0x8A382ED85C37FFFL)
+  }
+
+  it should "return null for invalid resolution" in {
+    invalidResolutions.foreach { resolution =>
+      val spatialDf = sparkSession.sql(s"SELECT h3_from_geo(35.8466667d, -0.2983396d, $resolution)")
+      assert(spatialDf.first().isNullAt(0))
+    }
+  }
+
+  it should "fail for invalid parameters when ansi enabled" in {
+    withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
+      assertThrows[IllegalArgumentException] {
+        sparkSession.sql("SELECT h3_from_geo(35.8466667d, -0.2983396d, -1)").collect()
+      }
+    }
   }
 
   protected override def functionName: String = "h3_from_geo"

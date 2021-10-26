@@ -6,7 +6,9 @@
 package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.spark.sql.h3.functions._
+import com.uber.h3core.exceptions.DistanceUndefinedException
 import org.apache.spark.sql.functions.column
+import org.apache.spark.sql.internal.SQLConf
 
 class DistanceSpec extends H3Spec {
   it should "return distance in hexes between start and end indices" in {
@@ -47,6 +49,23 @@ class DistanceSpec extends H3Spec {
     val result = df.select(h3_distance(column("start"), column("end")).alias("h3"))
     val distance = result.first().getAs[Int](0)
     assert(distance === 4)
+  }
+
+  it should "return null for indices around pentagon" in {
+    val start = 612630286896726015L
+    val end = 612630286919794687L
+    val spatialDf = sparkSession.sql(s"SELECT h3_distance(${start}l, ${end}l)")
+    assert(spatialDf.first().isNullAt(0))
+  }
+
+  it should "fail for invalid parameters when ansi enabled" in {
+    withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
+      assertThrows[DistanceUndefinedException] {
+        val start = 612630286896726015L
+        val end = 612630286919794687L
+        sparkSession.sql(s"SELECT h3_distance(${start}l, ${end}l)").collect()
+      }
+    }
   }
 
   protected override def functionName: String = "h3_distance"

@@ -7,6 +7,7 @@ package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.spark.sql.h3.functions._
 import org.apache.spark.sql.functions.column
+import org.apache.spark.sql.internal.SQLConf
 
 class ToChildrenSpec extends H3Spec {
   it should "return children of h3 index" in {
@@ -44,6 +45,34 @@ class ToChildrenSpec extends H3Spec {
     assert(children.size === 7)
     val childH3 = 626988729797656575L
     assert(children.contains(childH3))
+  }
+
+  it should "return null for higher child resolution" in {
+    val h3 = 622485130170302463L
+    val spatialDf = sparkSession.sql(s"SELECT h3_to_children(${h3}l, 6)")
+    assert(spatialDf.first().isNullAt(0))
+  }
+
+  it should "return null for invalid resolution" in {
+    val h3 = 622485130170302463L
+    invalidResolutions.foreach { resolution =>
+      val spatialDf = sparkSession.sql(s"SELECT h3_to_children(${h3}l, $resolution)")
+      assert(spatialDf.first().isNullAt(0))
+    }
+  }
+
+  it should "fail for invalid parameters when ansi enabled" in {
+    val h3 = 622485130170302463L
+    withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
+      Seq(
+        s"SELECT h3_to_children(${h3}l, -1)",
+        s"SELECT h3_to_children(${h3}l, -6)"
+      ).foreach { script =>
+        assertThrows[IllegalArgumentException] {
+          sparkSession.sql(script).collect()
+        }
+      }
+    }
   }
 
   protected override def functionName: String = "h3_to_children"

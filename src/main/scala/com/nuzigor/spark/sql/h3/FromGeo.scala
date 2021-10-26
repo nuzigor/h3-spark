@@ -8,6 +8,7 @@ package com.nuzigor.spark.sql.h3
 import com.nuzigor.h3.H3
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant, TernaryExpression}
+import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.types.{DataType, DoubleType, IntegerType, LongType}
 
 /**
@@ -34,17 +35,26 @@ import org.apache.spark.sql.types.{DataType, DoubleType, IntegerType, LongType}
           617057114733412351
      """,
   since = "0.1.0")
-case class FromGeo(latitudeExpr: Expression, longitudeExpr: Expression, resolutionExpr: Expression)
+case class FromGeo(latitudeExpr: Expression, longitudeExpr: Expression, resolutionExpr: Expression,
+                   failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends TernaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+
+  def this(latitudeExpr: Expression, longitudeExpr: Expression, resolutionExpr: Expression) =
+    this(latitudeExpr, longitudeExpr, resolutionExpr, SQLConf.get.ansiEnabled)
 
   override def inputTypes: Seq[DataType] = Seq(DoubleType, DoubleType, IntegerType)
   override def dataType: DataType = LongType
   override def children: Seq[Expression] = Seq(latitudeExpr, longitudeExpr, resolutionExpr)
+  override def nullable: Boolean = if (failOnError) super.nullable else true
 
   override protected def nullSafeEval(latitudeAny: Any, longitudeAny: Any, resolutionAny: Any): Any = {
     val latitude = latitudeAny.asInstanceOf[Double]
     val longitude = longitudeAny.asInstanceOf[Double]
     val resolution = resolutionAny.asInstanceOf[Int]
-    H3.getInstance().geoToH3(latitude, longitude, resolution)
+    try {
+      H3.getInstance().geoToH3(latitude, longitude, resolution)
+    } catch {
+      case _: IllegalArgumentException if !failOnError => null
+    }
   }
 }

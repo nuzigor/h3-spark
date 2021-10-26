@@ -6,7 +6,9 @@
 package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.spark.sql.h3.functions._
+import com.uber.h3core.exceptions.PentagonEncounteredException
 import org.apache.spark.sql.functions.column
+import org.apache.spark.sql.internal.SQLConf
 
 class HexRingSpec extends H3Spec {
   it should "create hollow ring around h3 index" in {
@@ -41,6 +43,21 @@ class HexRingSpec extends H3Spec {
     val ring = result.first().getAs[Seq[Long]](0)
     assert(ring.size === 12)
     assert(!ring.contains(h3))
+  }
+
+  it should "return null for indices around pentagon" in {
+    val h3 = 580986342163349503L
+    val spatialDf = sparkSession.sql(s"SELECT h3_hex_ring(${h3}l, 2)")
+    assert(spatialDf.first().isNullAt(0))
+  }
+
+  it should "fail for invalid parameters when ansi enabled" in {
+    withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
+      assertThrows[PentagonEncounteredException] {
+        val h3 = 580986342163349503L
+        sparkSession.sql(s"SELECT h3_hex_ring(${h3}l, 2)").collect()
+      }
+    }
   }
 
   protected override def functionName: String = "h3_hex_ring"

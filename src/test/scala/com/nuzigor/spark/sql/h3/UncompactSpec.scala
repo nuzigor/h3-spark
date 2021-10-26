@@ -7,6 +7,7 @@ package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.spark.sql.h3.functions._
 import org.apache.spark.sql.functions.column
+import org.apache.spark.sql.internal.SQLConf
 
 class UncompactSpec extends H3Spec {
   it should "uncompact h3 indices" in {
@@ -46,6 +47,23 @@ class UncompactSpec extends H3Spec {
     val result = df.select(h3_uncompact(h3_k_ring(column("h3"), 1), resolution).alias("result"))
     val uncompacted = result.first().getAs[Seq[Long]](0)
     assert(uncompacted.size > 7)
+  }
+
+  it should "return null for invalid resolution" in {
+    val h3 = 622485130170302463L
+    invalidResolutions.foreach { resolution =>
+      val spatialDf = sparkSession.sql(s"SELECT h3_uncompact(h3_k_ring(${h3}l, 1), $resolution)")
+      assert(spatialDf.first().isNullAt(0))
+    }
+  }
+
+  it should "fail for invalid parameters when ansi enabled" in {
+    withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
+      assertThrows[IllegalArgumentException] {
+        val h3 = 622485130170302463L
+        sparkSession.sql(s"SELECT h3_uncompact(h3_k_ring(${h3}l, 1), -1)").collect()
+      }
+    }
   }
 
   protected override def functionName: String = "h3_uncompact"
