@@ -27,6 +27,15 @@ object FunctionCatalog {
     createFunctionDescription[ToCenterChild]("h3_to_center_child"),
     createFunctionDescription[Compact]("h3_compact"),
     createFunctionDescription[Uncompact]("h3_uncompact"),
+    createFunctionDescription[AreNeighbors]("h3_are_neighbors"),
+    createFunctionDescription[CellAreaKm2]("h3_cell_area_km2"),
+    createFunctionDescription[CellAreaM2]("h3_cell_area_m2"),
+    createFunctionDescription[CellAreaRads2]("h3_cell_area_rads2"),
+    createFunctionDescription[PointDistanceKm]("h3_distance_km"),
+    createFunctionDescription[PointDistanceM]("h3_distance_m"),
+    createFunctionDescription[PointDistanceRads]("h3_distance_rads"),
+    createFunctionDescription[IsPentagon]("h3_is_pentagon"),
+    createFunctionDescription[KRingDistances]("h3_k_ring_distances")
   )
 
   private def createFunctionDescription[T <: Expression](name: String)

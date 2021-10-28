@@ -5,6 +5,7 @@
 
 package com.nuzigor.spark.sql.h3
 
+import com.uber.h3core.H3Core
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.internal.SQLConf
@@ -66,4 +67,6 @@ abstract class H3Spec extends AnyFlatSpec {
       }
     }
   }
+
+  protected lazy val h3: H3Core = H3Core.newInstance()
 }
