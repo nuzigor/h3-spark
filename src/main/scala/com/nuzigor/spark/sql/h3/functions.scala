@@ -56,6 +56,16 @@ object functions {
   }
 
   /**
+   * Computes h3 indices within k distance of the origin index.
+   * @param origin h3 index
+   * @param k distance
+   * @return array of arrays of h3 indices
+   */
+  def h3_k_ring_distances(origin: Column, k: Int): Column = withExpr {
+    KRingDistances(origin.expr, Literal(k))
+  }
+
+  /**
    * Computes hollow hexagonal ring centered at origin with sides of length k.
    * @param origin h3 index
    * @param k distance
@@ -86,6 +96,73 @@ object functions {
   }
 
   /**
+   * Gives the "great circle" or "haversine" distance between centers of h3 indices in radians.
+   * @param start start h3 index
+   * @param end end h3 index
+   * @return distance between centers of cells in radians
+   */
+  def h3_distance_rads(start: Column, end: Column): Column = withExpr {
+    PointDistanceRads(start.expr, end.expr)
+  }
+
+  /**
+   * Gives the "great circle" or "haversine" distance between centers of h3 indices in meters.
+   * @param start start h3 index
+   * @param end end h3 index
+   * @return distance between centers of cells in meters
+   */
+  def h3_distance_m(start: Column, end: Column): Column = withExpr {
+    PointDistanceM(start.expr, end.expr)
+  }
+
+  /**
+   * Gives the "great circle" or "haversine" distance between centers of h3 indices in kilometers.
+   * @param start start h3 index
+   * @param end end h3 index
+   * @return distance between centers of cells in kilometers
+   */
+  def h3_distance_km(start: Column, end: Column): Column = withExpr {
+    PointDistanceKm(start.expr, end.expr)
+  }
+
+  /**
+   * Gives the exact area of specific cell in square radians.
+   * @param h3 h3 index
+   * @return cell area in square radians
+   */
+  def h3_cell_area_rads2(h3: Column): Column = withExpr {
+    CellAreaRads2(h3.expr)
+  }
+
+  /**
+   * Gives the exact area of specific cell in square meters.
+   * @param h3 h3 index
+   * @return cell area in square meters
+   */
+  def h3_cell_area_m2(h3: Column): Column = withExpr {
+    CellAreaM2(h3.expr)
+  }
+
+  /**
+   * Gives the exact area of specific cell in square kilometers.
+   * @param h3 h3 index
+   * @return cell area in square kilometers
+   */
+  def h3_cell_area_km2(h3: Column): Column = withExpr {
+    CellAreaKm2(h3.expr)
+  }
+
+  /**
+   * Returns whether or not the provided h3 indexes are neighbors.
+   * @param origin origin h3 index
+   * @param destination destination h3 index
+   * @return true if the provided h3 indices are neighbors
+   */
+  def h3_are_neighbors(origin: Column, destination: Column): Column = withExpr {
+    AreNeighbors(origin.expr, destination.expr)
+  }
+
+  /**
    * Returns the resolution of h3 index.
    * @param h3 h3 index
    * @return resolution
@@ -101,6 +178,15 @@ object functions {
    */
   def h3_is_valid(h3: Column): Column = withExpr {
     IsValid(h3.expr)
+  }
+
+  /**
+   * Returns true if h3 index represents a pentagon cell
+   * @param h3 h3 index
+   * @return true if pentagon cell, false otherwise
+   */
+  def h3_is_pentagon(h3: Column): Column = withExpr {
+    IsPentagon(h3.expr)
   }
 
   /**

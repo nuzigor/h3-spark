@@ -11,29 +11,29 @@ import org.apache.spark.sql.internal.SQLConf
 
 class FromWktSpec extends H3Spec {
   it should "convert WKT point to h3" in {
-    val spatialDf = sparkSession.sql("SELECT h3_from_wkt('POINT (-0.2983396 35.8466667)', 10)")
-    val h3 = spatialDf.first().getAs[Long](0)
+    val df = sparkSession.sql(s"SELECT $functionName('POINT (-0.2983396 35.8466667)', 10)")
+    val h3 = df.first().getAs[Long](0)
     assert(h3 === 0x8A382ED85C37FFFL)
   }
 
   it should "return null for empty WKT point" in {
-    val spatialDf = sparkSession.sql("SELECT h3_from_wkt('POINT EMPTY', 10)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName('POINT EMPTY', 10)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "return null for invalid WKT" in {
-    val spatialDf = sparkSession.sql("SELECT h3_from_wkt('bla bla', 10)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName('bla bla', 10)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "return null for null WKT" in {
-    val spatialDf = sparkSession.sql("SELECT h3_from_wkt(null, 10)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName(null, 10)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "return null for null resolution" in {
-    val spatialDf = sparkSession.sql("SELECT h3_from_wkt('POINT (-0.2983396 35.8466667)', null)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName('POINT (-0.2983396 35.8466667)', null)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "support compiled function" in {
@@ -47,16 +47,16 @@ class FromWktSpec extends H3Spec {
 
   it should "return null for invalid resolution" in {
     invalidResolutions.foreach { resolution =>
-      val spatialDf = sparkSession.sql(s"SELECT h3_from_wkt('POINT (-0.2983396 35.8466667)', $resolution)")
-      assert(spatialDf.first().isNullAt(0))
+      val df = sparkSession.sql(s"SELECT $functionName('POINT (-0.2983396 35.8466667)', $resolution)")
+      assert(df.first().isNullAt(0))
     }
   }
 
   it should "fail for invalid parameters when ansi enabled" in {
     withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
       Seq(
-        "SELECT h3_from_wkt('POINT (-0.2983396 35.8466667)', -1)",
-        "SELECT h3_from_wkt('bla bla', 10)"
+        s"SELECT $functionName('POINT (-0.2983396 35.8466667)', -1)",
+        s"SELECT $functionName('bla bla', 10)"
       ).foreach { script =>
         assertThrows[Throwable] {
           sparkSession.sql(script).collect()

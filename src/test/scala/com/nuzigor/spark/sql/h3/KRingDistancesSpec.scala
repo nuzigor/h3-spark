@@ -6,15 +6,16 @@
 package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.spark.sql.h3.functions._
-import org.apache.spark.sql.functions.column
+import org.apache.spark.sql.functions.col
 
-class KRingSpec extends H3Spec {
-  it should "create ring around h3 index" in {
+class KRingDistancesSpec extends H3Spec {
+  it should "create rings around h3 index" in {
     val h3 = 622485130170302463L
     val df = sparkSession.sql(s"SELECT $functionName(${h3}l, 1)")
-    val ring = df.first().getAs[Seq[Long]](0)
-    assert(ring.size === 7)
-    assert(ring.contains(h3))
+    val ring = df.first().getAs[Seq[Seq[Long]]](0)
+    assert(ring.size === 2)
+    assert(ring.head.head === h3)
+    assert(ring(1).size === 6)
   }
 
   it should "return null for null h3" in {
@@ -37,11 +38,12 @@ class KRingSpec extends H3Spec {
     import sparkSession.implicits._
     val h3 = 622485130170302463L
     val df = Seq((h3, 1)).toDF("h3", "id")
-    val result = df.select(h3_k_ring(column("h3"), 1).alias("ring"))
-    val ring = result.first().getAs[Seq[Long]](0)
-    assert(ring.size === 7)
-    assert(ring.contains(h3))
+    val result = df.select(h3_k_ring_distances(col("h3"), 1))
+    val ring = result.first().getAs[Seq[Seq[Long]]](0)
+    assert(ring.size === 2)
+    assert(ring.head.head === h3)
+    assert(ring(1).size === 6)
   }
 
-  protected override def functionName: String = "h3_k_ring"
+  protected override def functionName: String = "h3_k_ring_distances"
 }

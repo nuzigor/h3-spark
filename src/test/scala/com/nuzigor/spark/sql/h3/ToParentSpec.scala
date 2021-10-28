@@ -12,20 +12,20 @@ import org.apache.spark.sql.internal.SQLConf
 class ToParentSpec extends H3Spec {
   it should "return h3 parent index" in {
     val h3 = 622485130170302463L
-    val spatialDf = sparkSession.sql(s"SELECT h3_to_parent(${h3}l, 8)")
-    val parent = spatialDf.first().getAs[Long](0)
+    val df = sparkSession.sql(s"SELECT $functionName(${h3}l, 8)")
+    val parent = df.first().getAs[Long](0)
     assert(parent === 613477930917429247L)
   }
 
   it should "return null for null h3" in {
-    val spatialDf = sparkSession.sql(s"SELECT h3_to_parent(null, 8)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName(null, 8)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "return null for null resolution" in {
     val h3 = 622485130170302463L
-    val spatialDf = sparkSession.sql(s"SELECT h3_to_parent(${h3}l, null)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName(${h3}l, null)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "support compiled function" in {
@@ -40,15 +40,15 @@ class ToParentSpec extends H3Spec {
 
   it should "return null for lower parent resolution" in {
     val h3 = 622485130170302463L
-    val spatialDf = sparkSession.sql(s"SELECT h3_to_parent(${h3}l, 12)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName(${h3}l, 12)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "return null for invalid resolution" in {
     val h3 = 622485130170302463L
     invalidResolutions.foreach { resolution =>
-      val spatialDf = sparkSession.sql(s"SELECT h3_to_parent(${h3}l, $resolution)")
-      assert(spatialDf.first().isNullAt(0))
+      val df = sparkSession.sql(s"SELECT $functionName(${h3}l, $resolution)")
+      assert(df.first().isNullAt(0))
     }
   }
 
@@ -56,7 +56,7 @@ class ToParentSpec extends H3Spec {
     withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
       assertThrows[IllegalArgumentException] {
         val h3 = 622485130170302463L
-        sparkSession.sql(s"SELECT h3_to_parent(${h3}l, -1)").collect()
+        sparkSession.sql(s"SELECT $functionName(${h3}l, -1)").collect()
       }
     }
   }

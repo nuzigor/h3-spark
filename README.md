@@ -8,9 +8,9 @@ Brings [H3 - Hexagonal hierarchical geospatial indexing system](https://h3geo.or
 Installation
 ------------
 
-Build with 'sbt assembly'
+Fetch the JAR file from Maven.
 
-Add dependency to h3-spark.jar 
+    libraryDependencies += "io.github.nuzigor" %% "h3-spark" % "0.7.0"
 
 h3-spark supports only Spark 3+.
 
@@ -28,7 +28,7 @@ Config your spark applications with `spark.sql.extensions` option: `spark.sql.ex
 
 For example, to use in pure Spark SQL environment:
 
-    spark-sql --jars Path/To/h3-spark.jar --conf spark.sql.extensions=com.nuzigor.spark.sql.h3.H3SqlExtensions
+    spark-sql --packages io.github.nuzigor:h3-spark_2.12:0.7.0 --conf spark.sql.extensions=com.nuzigor.spark.sql.h3.H3SqlExtensions
 
 Supported functions
 --------------
@@ -47,3 +47,12 @@ Supported functions
 - h3_to_center_child
 - h3_compact
 - h3_uncompact
+- h3_are_neighbors
+- h3_cell_area_km2
+- h3_cell_area_m2
+- h3_cell_area_rads2
+- h3_distance_km
+- h3_distance_m
+- h3_distance_rads
+- h3_is_pentagon
+- h3_k_ring_distances
