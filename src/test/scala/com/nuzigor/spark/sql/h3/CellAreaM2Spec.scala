@@ -12,14 +12,14 @@ import org.scalactic.Tolerance._
 class CellAreaM2Spec extends H3Spec {
   it should "return cell area in m2" in {
     val index = 622485130170957823L
-    val spatialDf = sparkSession.sql(s"SELECT $functionName(${index}l)")
-    val area = spatialDf.first().getAs[Double](0)
+    val df = sparkSession.sql(s"SELECT $functionName(${index}l)")
+    val area = df.first().getAs[Double](0)
     assert(area === 14812.0 +- 0.1)
   }
 
   it should "return null for null index" in {
-    val spatialDf = sparkSession.sql(s"SELECT $functionName(null)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName(null)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "support compiled function" in {

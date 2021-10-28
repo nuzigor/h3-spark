@@ -14,21 +14,21 @@ class IsPentagonSpec extends H3Spec {
   it should "return true for pentagon h3 index" in {
     val resolution = 7
     val index = h3.getPentagonIndexes(resolution).asScala.head
-    val spatialDf = sparkSession.sql(s"SELECT $functionName(${index}l)")
-    val isPentagon = spatialDf.first().getAs[Boolean](0)
+    val df = sparkSession.sql(s"SELECT $functionName(${index}l)")
+    val isPentagon = df.first().getAs[Boolean](0)
     assert(isPentagon)
   }
 
   it should "return false for normal h3 index" in {
     val h3 = 622485130170302463L
-    val spatialDf = sparkSession.sql(s"SELECT $functionName(${h3}l)")
-    val isPentagon = spatialDf.first().getAs[Boolean](0)
+    val df = sparkSession.sql(s"SELECT $functionName(${h3}l)")
+    val isPentagon = df.first().getAs[Boolean](0)
     assert(!isPentagon)
   }
 
   it should "return null for null h3 index" in {
-    val spatialDf = sparkSession.sql(s"SELECT $functionName(null)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName(null)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "support compiled function" in {

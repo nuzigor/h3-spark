@@ -12,25 +12,25 @@ import org.apache.spark.sql.internal.SQLConf
 class ToCenterChildSpec extends H3Spec {
   it should "return center child of h3 index" in {
     val h3 = 622485130170302463L
-    val spatialDf = sparkSession.sql(s"SELECT h3_to_center_child(${h3}l, 11)")
-    val child = spatialDf.first().getAs[Long](0)
+    val df = sparkSession.sql(s"SELECT $functionName(${h3}l, 11)")
+    val child = df.first().getAs[Long](0)
     assert(child === 626988729797644287L)
   }
 
   it should "return null for null h3" in {
-    val spatialDf = sparkSession.sql(s"SELECT h3_to_center_child(null, 11)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName(null, 11)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "return null for null resolution" in {
     val h3 = 622485130170302463L
-    val spatialDf = sparkSession.sql(s"SELECT h3_to_center_child(${h3}l, null)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName(${h3}l, null)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "not return null for invalid h3" in {
-    val spatialDf = sparkSession.sql(s"SELECT h3_to_center_child(0l, 2)")
-    assert(!spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName(0l, 2)")
+    assert(!df.first().isNullAt(0))
   }
 
   it should "support compiled function" in {
@@ -45,15 +45,15 @@ class ToCenterChildSpec extends H3Spec {
 
   it should "return null for higher child resolution" in {
     val h3 = 622485130170302463L
-    val spatialDf = sparkSession.sql(s"SELECT h3_to_center_child(${h3}l, 6)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName(${h3}l, 6)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "return null for invalid resolution" in {
     val h3 = 622485130170302463L
     invalidResolutions.foreach { resolution =>
-      val spatialDf = sparkSession.sql(s"SELECT h3_to_center_child(${h3}l, $resolution)")
-      assert(spatialDf.first().isNullAt(0))
+      val df = sparkSession.sql(s"SELECT $functionName(${h3}l, $resolution)")
+      assert(df.first().isNullAt(0))
     }
   }
 
@@ -61,7 +61,7 @@ class ToCenterChildSpec extends H3Spec {
     withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
       assertThrows[IllegalArgumentException] {
         val h3 = 622485130170302463L
-        sparkSession.sql(s"SELECT h3_to_center_child(${h3}l, -1)").collect()
+        sparkSession.sql(s"SELECT $functionName(${h3}l, -1)").collect()
       }
     }
   }

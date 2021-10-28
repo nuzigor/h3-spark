@@ -13,21 +13,21 @@ class PointDistanceMSpec extends H3Spec {
   it should "return distance in meters between start and end indices" in {
     val start = 622485130170957823L
     val end = 622485130170302463L
-    val spatialDf = sparkSession.sql(s"SELECT $functionName(${start}l, ${end}l)")
-    val distance = spatialDf.first().getAs[Double](0)
+    val df = sparkSession.sql(s"SELECT $functionName(${start}l, ${end}l)")
+    val distance = df.first().getAs[Double](0)
     assert(distance === 475.9 +- 0.1)
   }
 
   it should "return null for null start" in {
     val end = 622485130170302463L
-    val spatialDf = sparkSession.sql(s"SELECT $functionName(null, ${end}l)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName(null, ${end}l)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "return null for null end" in {
     val start = 622485130170957823L
-    val spatialDf = sparkSession.sql(s"SELECT $functionName(${start}l, null)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName(${start}l, null)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "support compiled function" in {

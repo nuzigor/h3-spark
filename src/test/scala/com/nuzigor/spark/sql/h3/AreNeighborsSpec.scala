@@ -12,43 +12,43 @@ class AreNeighborsSpec extends H3Spec {
   it should "return true if indices are neighbors" in {
     val start = 622485130171842559L
     val end = 622485130170302463L
-    val spatialDf = sparkSession.sql(s"SELECT $functionName(${start}l, ${end}l)")
-    val result = spatialDf.first().getAs[Boolean](0)
+    val df = sparkSession.sql(s"SELECT $functionName(${start}l, ${end}l)")
+    val result = df.first().getAs[Boolean](0)
     assert(result)
   }
 
   it should "return false if indices are not neighbors" in {
     val start = 622485130170957823L
     val end = 622485130170302463L
-    val spatialDf = sparkSession.sql(s"SELECT $functionName(${start}l, ${end}l)")
-    val result = spatialDf.first().getAs[Boolean](0)
+    val df = sparkSession.sql(s"SELECT $functionName(${start}l, ${end}l)")
+    val result = df.first().getAs[Boolean](0)
     assert(!result)
   }
 
   it should "return false for invalid start" in {
     val end = 622485130170302463L
-    val spatialDf = sparkSession.sql(s"SELECT $functionName(-1, ${end}l)")
-    val result = spatialDf.first().getAs[Boolean](0)
+    val df = sparkSession.sql(s"SELECT $functionName(-1, ${end}l)")
+    val result = df.first().getAs[Boolean](0)
     assert(!result)
   }
 
   it should "return false for invalid end" in {
     val start = 622485130170957823L
-    val spatialDf = sparkSession.sql(s"SELECT $functionName(${start}l, -1)")
-    val result = spatialDf.first().getAs[Boolean](0)
+    val df = sparkSession.sql(s"SELECT $functionName(${start}l, -1)")
+    val result = df.first().getAs[Boolean](0)
     assert(!result)
   }
 
   it should "return null for null start" in {
     val end = 622485130170302463L
-    val spatialDf = sparkSession.sql(s"SELECT $functionName(null, ${end}l)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName(null, ${end}l)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "return null for null end" in {
     val start = 622485130170957823L
-    val spatialDf = sparkSession.sql(s"SELECT $functionName(${start}l, null)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName(${start}l, null)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "support compiled function" in {

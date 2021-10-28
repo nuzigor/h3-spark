@@ -12,27 +12,27 @@ import org.apache.spark.sql.internal.SQLConf
 class ToChildrenSpec extends H3Spec {
   it should "return children of h3 index" in {
     val h3 = 622485130170302463L
-    val spatialDf = sparkSession.sql(s"SELECT h3_to_children(${h3}l, 11)")
-    val children = spatialDf.first().getAs[Seq[Long]](0)
+    val df = sparkSession.sql(s"SELECT $functionName(${h3}l, 11)")
+    val children = df.first().getAs[Seq[Long]](0)
     assert(children.size === 7)
     val childH3 = 626988729797656575L
     assert(children.contains(childH3))
   }
 
   it should "return null for null h3" in {
-    val spatialDf = sparkSession.sql(s"SELECT h3_to_children(null, 11)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName(null, 11)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "return null for null resolution" in {
     val h3 = 622485130170302463L
-    val spatialDf = sparkSession.sql(s"SELECT h3_to_children(${h3}l, null)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName(${h3}l, null)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "not return null for invalid h3" in {
-    val spatialDf = sparkSession.sql(s"SELECT h3_to_children(0l, 2)")
-    assert(!spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName(0l, 2)")
+    assert(!df.first().isNullAt(0))
   }
 
   it should "support compiled function" in {
@@ -49,15 +49,15 @@ class ToChildrenSpec extends H3Spec {
 
   it should "return null for higher child resolution" in {
     val h3 = 622485130170302463L
-    val spatialDf = sparkSession.sql(s"SELECT h3_to_children(${h3}l, 6)")
-    assert(spatialDf.first().isNullAt(0))
+    val df = sparkSession.sql(s"SELECT $functionName(${h3}l, 6)")
+    assert(df.first().isNullAt(0))
   }
 
   it should "return null for invalid resolution" in {
     val h3 = 622485130170302463L
     invalidResolutions.foreach { resolution =>
-      val spatialDf = sparkSession.sql(s"SELECT h3_to_children(${h3}l, $resolution)")
-      assert(spatialDf.first().isNullAt(0))
+      val df = sparkSession.sql(s"SELECT $functionName(${h3}l, $resolution)")
+      assert(df.first().isNullAt(0))
     }
   }
 
@@ -65,8 +65,8 @@ class ToChildrenSpec extends H3Spec {
     val h3 = 622485130170302463L
     withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
       Seq(
-        s"SELECT h3_to_children(${h3}l, -1)",
-        s"SELECT h3_to_children(${h3}l, -6)"
+        s"SELECT $functionName(${h3}l, -1)",
+        s"SELECT $functionName(${h3}l, -6)"
       ).foreach { script =>
         assertThrows[IllegalArgumentException] {
           sparkSession.sql(script).collect()
