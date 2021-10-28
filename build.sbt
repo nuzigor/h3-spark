@@ -9,7 +9,7 @@ ThisBuild / description := "Brings H3 - Hexagonal hierarchical geospatial indexi
 ThisBuild / homepage := Some(url("https://github.com/nuzigor/h3-spark"))
 ThisBuild / licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
 ThisBuild / versionScheme := Some("semver-spec")
-ThisBuild / version      := "0.6.0"
+ThisBuild / version      := "0.7.0"
 
 ThisBuild / developers := List(
   Developer(
