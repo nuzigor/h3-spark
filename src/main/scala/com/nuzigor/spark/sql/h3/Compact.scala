@@ -8,7 +8,7 @@ package com.nuzigor.spark.sql.h3
 import com.nuzigor.h3.H3
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant, UnaryExpression}
-import org.apache.spark.sql.catalyst.util.{ArrayData, GenericArrayData}
+import org.apache.spark.sql.catalyst.util.ArrayData
 import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.types.{ArrayType, DataType, LongType}
 
@@ -62,7 +62,7 @@ case class Compact(h3Expr: Expression,
       null
     } else {
       try {
-        new GenericArrayData(H3.getInstance().compact(list).asScala)
+        ArrayData.toArrayData(H3.getInstance().compact(list).asScala.toArray)
       } catch {
         case _: IllegalArgumentException if !failOnError => null
       }

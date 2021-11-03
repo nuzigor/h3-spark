@@ -8,7 +8,7 @@ package com.nuzigor.spark.sql.h3
 import com.nuzigor.h3.H3
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
-import org.apache.spark.sql.catalyst.util.GenericArrayData
+import org.apache.spark.sql.catalyst.util.ArrayData
 import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.types.{ArrayType, DataType, IntegerType, LongType}
 
@@ -53,12 +53,12 @@ case class ToChildren(h3Expr: Expression, childResolutionExpr: Expression,
     val h3 = h3Any.asInstanceOf[Long]
     val childResolution = childResolutionAny.asInstanceOf[Int]
     try {
-      val children = H3.getInstance().h3ToChildren(h3, childResolution).asScala
+      val children = H3.getInstance().h3ToChildren(h3, childResolution).asScala.toArray
       if (children.isEmpty) {
         throw new IllegalArgumentException(
           s"childRes $childResolution must be between ${H3.getInstance().h3GetResolution(h3)} and 15, inclusive")
       } else {
-        new GenericArrayData(children)
+        ArrayData.toArrayData(children)
       }
     }
     catch {

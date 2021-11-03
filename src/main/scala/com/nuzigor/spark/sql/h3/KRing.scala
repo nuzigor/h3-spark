@@ -8,7 +8,7 @@ package com.nuzigor.spark.sql.h3
 import com.nuzigor.h3.H3
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
-import org.apache.spark.sql.catalyst.util.GenericArrayData
+import org.apache.spark.sql.catalyst.util.ArrayData
 import org.apache.spark.sql.types.{ArrayType, DataType, IntegerType, LongType}
 
 import scala.collection.JavaConverters._
@@ -46,6 +46,6 @@ case class KRing(originExpr: Expression, kExpr: Expression)
   override protected def nullSafeEval(originAny: Any, kAny: Any): Any = {
     val origin = originAny.asInstanceOf[Long]
     val k = kAny.asInstanceOf[Int]
-    new GenericArrayData(H3.getInstance().kRing(origin, k).asScala)
+    ArrayData.toArrayData(H3.getInstance().kRing(origin, k).asScala.toArray)
   }
 }

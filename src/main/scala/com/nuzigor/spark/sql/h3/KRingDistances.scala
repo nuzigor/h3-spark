@@ -8,7 +8,7 @@ package com.nuzigor.spark.sql.h3
 import com.nuzigor.h3.H3
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
-import org.apache.spark.sql.catalyst.util.GenericArrayData
+import org.apache.spark.sql.catalyst.util.ArrayData
 import org.apache.spark.sql.types.{ArrayType, DataType, IntegerType, LongType}
 
 import scala.collection.JavaConverters._
@@ -46,6 +46,7 @@ case class KRingDistances(originExpr: Expression, kExpr: Expression)
   override protected def nullSafeEval(originAny: Any, kAny: Any): Any = {
     val origin = originAny.asInstanceOf[Long]
     val k = kAny.asInstanceOf[Int]
-    new GenericArrayData(H3.getInstance().kRingDistances(origin, k).asScala.map(i => new GenericArrayData(i.asScala)))
+    val distances = H3.getInstance().kRingDistances(origin, k)
+    ArrayData.toArrayData(distances.asScala.map(i => ArrayData.toArrayData(i.asScala.toArray)))
   }
 }

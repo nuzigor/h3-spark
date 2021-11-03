@@ -9,7 +9,7 @@ import com.nuzigor.h3.H3
 import com.uber.h3core.exceptions.PentagonEncounteredException
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
-import org.apache.spark.sql.catalyst.util.GenericArrayData
+import org.apache.spark.sql.catalyst.util.ArrayData
 import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.types.{ArrayType, DataType, IntegerType, LongType}
 
@@ -54,7 +54,7 @@ case class HexRing(originExpr: Expression, kExpr: Expression,
     val origin = originAny.asInstanceOf[Long]
     val k = kAny.asInstanceOf[Int]
     try {
-      new GenericArrayData(H3.getInstance().hexRing(origin, k).asScala)
+      ArrayData.toArrayData(H3.getInstance().hexRing(origin, k).asScala.toArray)
     } catch {
       case _: PentagonEncounteredException if !failOnError => null
     }
