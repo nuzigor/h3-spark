@@ -45,7 +45,7 @@ case class FromGeo(latitudeExpr: Expression, longitudeExpr: Expression, resoluti
   override def inputTypes: Seq[DataType] = Seq(DoubleType, DoubleType, IntegerType)
   override def dataType: DataType = LongType
   override def children: Seq[Expression] = Seq(latitudeExpr, longitudeExpr, resolutionExpr)
-  override def nullable: Boolean = if (failOnError) super.nullable else true
+  override def nullable: Boolean = !failOnError || super.nullable
 
   override protected def nullSafeEval(latitudeAny: Any, longitudeAny: Any, resolutionAny: Any): Any = {
     val latitude = latitudeAny.asInstanceOf[Double]

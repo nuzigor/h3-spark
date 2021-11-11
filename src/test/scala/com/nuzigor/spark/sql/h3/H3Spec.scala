@@ -9,6 +9,7 @@ import com.uber.h3core.H3Core
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.internal.SQLConf
+import org.apache.spark.sql.internal.StaticSQLConf.SPARK_SESSION_EXTENSIONS
 import org.scalatest.flatspec.AnyFlatSpec
 
 abstract class H3Spec extends AnyFlatSpec {
@@ -40,7 +41,7 @@ abstract class H3Spec extends AnyFlatSpec {
     .appName("h3SparkSqlTest")
     .config("spark.sql.warehouse.dir", warehouseLocation)
     .config("spark.sql.shuffle.partitions", "1")
-    .withExtensions(new H3SqlExtensions().apply(_))
+    .config(SPARK_SESSION_EXTENSIONS.key, classOf[H3SqlExtensions].getCanonicalName)
     .getOrCreate()
 
   protected def withSQLConf(pairs: (String, String)*)(f: => Unit): Unit = {

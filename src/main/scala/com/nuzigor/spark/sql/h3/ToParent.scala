@@ -43,7 +43,7 @@ case class ToParent(h3Expr: Expression, parentResolutionExpr: Expression,
   override def right: Expression = parentResolutionExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, IntegerType)
   override def dataType: DataType = LongType
-  override def nullable: Boolean = if (failOnError) super.nullable else true
+  override def nullable: Boolean = !failOnError || super.nullable
 
   override protected def nullSafeEval(h3Any: Any, parentResolutionAny: Any): Any = {
     val h3 = h3Any.asInstanceOf[Long]

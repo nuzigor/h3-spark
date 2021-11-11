@@ -11,7 +11,7 @@ import com.uber.h3core.exceptions.LineUndefinedException
 import com.uber.h3core.util.GeoCoord
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
-import org.apache.spark.sql.catalyst.util.GenericArrayData
+import org.apache.spark.sql.catalyst.util.ArrayData
 import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.types._
 import org.apache.spark.unsafe.types.UTF8String
@@ -75,67 +75,65 @@ case class ArrayFromWkt(wktExpr: Expression, resolutionExpr: Expression,
     val wkt = wktAny.asInstanceOf[UTF8String].toString
     val resolution = resolutionAny.asInstanceOf[Int]
     try {
-      val reader = new WKTReader()
+      val reader = new WKTReader
       val geometry = reader.read(wkt)
       val h3Instance = H3.getInstance()
       val result = getGeometryIndices(h3Instance, geometry, resolution)
       if (result.isEmpty) {
         null
       } else {
-        new GenericArrayData(result)
+        ArrayData.toArrayData(result)
       }
     } catch {
-      case _: ParseException if !failOnError => null
-      case _: LineUndefinedException if !failOnError => null
-      case _: IllegalArgumentException if !failOnError => null
+      case _: ParseException | _: LineUndefinedException | _: IllegalArgumentException if !failOnError => null
     }
   }
 
-  private def getGeometryIndices(h3Instance: H3Core, geometry: Geometry, resolution: Int): Seq[Long] = {
+  private def getGeometryIndices(h3Instance: H3Core, geometry: Geometry, resolution: Int) = {
     geometry match {
-      case geometry if geometry.isEmpty => Seq.empty
-      case polygon: Polygon => getPolygonIndices(h3Instance, polygon, resolution)
+      case geometry if geometry.isEmpty => Array.empty[Long]
+      case polygon: Polygon => getPolygonIndices(h3Instance, polygon, resolution).distinct
       case point: Point => Array(h3Instance.geoToH3(point.getY, point.getX, resolution))
       case multiPoint: MultiPoint => gemMultiPointIndices(h3Instance, multiPoint, resolution)
       case multiPolygon: MultiPolygon => getMultiPolygonIndices(h3Instance, multiPolygon, resolution)
-      case lineString: LineString => getLineStringIndices(h3Instance, lineString, resolution)
+      case lineString: LineString => getLineStringIndices(h3Instance, lineString, resolution).distinct.toArray
       case multiLineString: MultiLineString => getMultiLineStringIndices(h3Instance, multiLineString, resolution)
-      case _ => Seq.empty
+      case _ => Array.empty[Long]
     }
   }
 
   private def getMultiLineStringIndices(h3Instance: H3Core, multiLineString: MultiLineString, resolution: Int) = {
     (0 until multiLineString.getNumGeometries)
-      .map(i => multiLineString.getGeometryN(i).asInstanceOf[LineString])
-      .flatMap(l => getLineStringIndices(h3Instance, l, resolution))
+      .map(multiLineString.getGeometryN(_).asInstanceOf[LineString])
+      .flatMap(getLineStringIndices(h3Instance, _, resolution))
       .distinct
+      .toArray
   }
 
   private def getMultiPolygonIndices(h3Instance: H3Core, multiPolygon: MultiPolygon, resolution: Int) = {
     (0 until multiPolygon.getNumGeometries)
-      .map(i => multiPolygon.getGeometryN(i).asInstanceOf[Polygon])
-      .flatMap(p => getPolygonIndices(h3Instance, p, resolution))
+      .map(multiPolygon.getGeometryN(_).asInstanceOf[Polygon])
+      .flatMap(getPolygonIndices(h3Instance, _, resolution))
       .distinct
+      .toArray
   }
 
-  private def gemMultiPointIndices(h3Instance: H3Core, multiPoint: MultiPoint, resolution: Int): Seq[Long] = {
+  private def gemMultiPointIndices(h3Instance: H3Core, multiPoint: MultiPoint, resolution: Int) = {
     (0 until multiPoint.getNumGeometries)
-      .map(i => multiPoint.getGeometryN(i).getCoordinate)
+      .map(multiPoint.getGeometryN(_).getCoordinate)
       .map(c => h3Instance.geoToH3(c.y, c.x, resolution))
       .distinct
+      .toArray
   }
 
-  private def getPolygonIndices(h3Instance: H3Core, polygon: Polygon, resolution: Int): Seq[Long] = {
+  private def getPolygonIndices(h3Instance: H3Core, polygon: Polygon, resolution: Int) = {
     val toGeoJavaList = (ring: LinearRing) => ring.getCoordinates.map(c => new GeoCoord(c.y, c.x)).toList.asJava
     val coordinates = toGeoJavaList(polygon.getExteriorRing)
     val holes = (0 until polygon.getNumInteriorRing).map(i => toGeoJavaList(polygon.getInteriorRingN(i))).toList.asJava
-    h3Instance
-      .polyfill(coordinates, holes, resolution)
-      .asScala
-      .map(Long2long)
+    h3Instance.polyfill(coordinates, holes, resolution).asScala.toArray
   }
 
-  private def getLineStringIndices(h3Instance: H3Core, lineString: LineString, resolution: Int): Seq[Long] = {
+  private def getLineStringIndices(h3Instance: H3Core, lineString: LineString, resolution: Int) = {
     val indices = lineString.getCoordinates.map(c => h3Instance.geoToH3(c.y, c.x, resolution))
     (0 until indices.length - 1)
       .flatMap(i => {
@@ -146,6 +144,5 @@ case class ArrayFromWkt(wktExpr: Expression, resolutionExpr: Expression,
           .asScala
           .map(Long2long)
       })
-      .distinct
   }
 }

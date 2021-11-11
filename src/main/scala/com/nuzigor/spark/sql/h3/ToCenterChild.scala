@@ -9,9 +9,7 @@ import com.nuzigor.h3.H3
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
 import org.apache.spark.sql.internal.SQLConf
-import org.apache.spark.sql.types.{ArrayType, DataType, IntegerType, LongType}
-
-import scala.collection.JavaConverters._
+import org.apache.spark.sql.types.{DataType, IntegerType, LongType}
 
 /**
  * Returns the center child of h3 index at child resolution.
@@ -45,7 +43,7 @@ case class ToCenterChild(h3Expr: Expression, childResolutionExpr: Expression,
   override def right: Expression = childResolutionExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, IntegerType)
   override def dataType: DataType = LongType
-  override def nullable: Boolean = if (failOnError) super.nullable else true
+  override def nullable: Boolean = !failOnError || super.nullable
 
   override protected def nullSafeEval(h3Any: Any, childResolutionAny: Any): Any = {
     val h3 = h3Any.asInstanceOf[Long]

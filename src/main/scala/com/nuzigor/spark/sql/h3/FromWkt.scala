@@ -7,7 +7,7 @@ package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.h3.H3
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
-import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, Literal, NullIntolerant}
+import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
 import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.types.{DataType, IntegerType, LongType, StringType}
 import org.apache.spark.unsafe.types.UTF8String
@@ -66,8 +66,7 @@ case class FromWkt(wktExpr: Expression, resolutionExpr: Expression,
         }
       }
     } catch {
-      case _: ParseException if !failOnError => null
-      case _: IllegalArgumentException if !failOnError => null
+      case _: ParseException | _: IllegalArgumentException if !failOnError => null
     }
   }
 }
