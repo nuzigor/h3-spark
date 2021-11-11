@@ -12,8 +12,6 @@ import org.apache.spark.sql.catalyst.util.ArrayData
 import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.types.{ArrayType, DataType, LongType}
 
-import java.util
-import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 
 /**
@@ -39,7 +37,7 @@ import scala.collection.JavaConverters._
   since = "0.1.0")
 case class Compact(h3Expr: Expression,
                    failOnError: Boolean = SQLConf.get.ansiEnabled)
-  extends UnaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+  extends UnaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant with ArrayListConversion {
 
   def this(h3Expr: Expression) = this(h3Expr, SQLConf.get.ansiEnabled)
 
@@ -52,27 +50,15 @@ case class Compact(h3Expr: Expression,
 
   override protected def nullSafeEval(h3Any: Any): Any = {
     val h3Array = h3Any.asInstanceOf[ArrayData]
+    toLongArrayList(h3Array, nullEntries) match {
+      case Some(list) =>
+        try {
+          ArrayData.toArrayData(H3.getInstance().compact(list).asScala.toArray)
+        } catch {
+          case _: IllegalArgumentException if !failOnError => null
+        }
 
-    if (nullEntries && hasNull(h3Array)) {
-      null
-    } else {
-      val list = new util.ArrayList[java.lang.Long]
-      for (i <- 0 until h3Array.numElements) {
-        list.add(h3Array.getLong(i))
-      }
-
-      try {
-        ArrayData.toArrayData(H3.getInstance().compact(list).asScala.toArray)
-      } catch {
-        case _: IllegalArgumentException if !failOnError => null
-      }
+      case None => null
     }
-  }
-
-  private def hasNull(arrayData: ArrayData): Boolean = hasNull(arrayData, arrayData.numElements, 0)
-
-  @tailrec
-  private def hasNull(arrayData: ArrayData, numEntries: Int, index: Int): Boolean = {
-    index < numEntries && (arrayData.isNullAt(index) || hasNull(arrayData, numEntries, index + 1))
   }
 }
