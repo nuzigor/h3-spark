@@ -42,7 +42,7 @@ case class Distance(startExpr: Expression, endExpr: Expression, failOnError: Boo
   override def right: Expression = endExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, LongType)
   override def dataType: DataType = IntegerType
-  override def nullable: Boolean = if (failOnError) super.nullable else true
+  override def nullable: Boolean = !failOnError || super.nullable
 
   override protected def nullSafeEval(originAny: Any, endAny: Any): Any = {
     val start = originAny.asInstanceOf[Long]

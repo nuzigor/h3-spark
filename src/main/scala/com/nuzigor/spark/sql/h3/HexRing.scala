@@ -48,7 +48,7 @@ case class HexRing(originExpr: Expression, kExpr: Expression,
   override def right: Expression = kExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, IntegerType)
   override def dataType: DataType = ArrayType(LongType, containsNull = false)
-  override def nullable: Boolean = if (failOnError) super.nullable else true
+  override def nullable: Boolean = !failOnError || super.nullable
 
   override protected def nullSafeEval(originAny: Any, kAny: Any): Any = {
     val origin = originAny.asInstanceOf[Long]

@@ -48,7 +48,7 @@ case class Line(startExpr: Expression, endExpr: Expression,
   override def right: Expression = endExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, LongType)
   override def dataType: DataType = ArrayType(LongType, containsNull = false)
-  override def nullable: Boolean = if (failOnError) super.nullable else true
+  override def nullable: Boolean = !failOnError || super.nullable
 
   override protected def nullSafeEval(startAny: Any, endAny: Any): Any = {
     val start = startAny.asInstanceOf[Long]
