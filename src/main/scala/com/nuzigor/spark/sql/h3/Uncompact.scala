@@ -13,6 +13,7 @@ import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.types.{ArrayType, DataType, IntegerType, LongType}
 
 import java.util
+import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 
 /**
@@ -44,34 +45,38 @@ case class Uncompact(h3Expr: Expression, resolutionExpr: Expression,
   def this(h3Expr: Expression, resolutionExpr: Expression) =
     this(h3Expr, resolutionExpr, SQLConf.get.ansiEnabled)
 
+  @transient private lazy val nullEntries: Boolean = left.dataType.asInstanceOf[ArrayType].containsNull
+
   override def left: Expression = h3Expr
   override def right: Expression = resolutionExpr
   override def inputTypes: Seq[DataType] = Seq(ArrayType(LongType), IntegerType)
   override def dataType: DataType = ArrayType(LongType, containsNull = false)
-  override def nullable: Boolean =
-    if (failOnError) left.nullable || right.nullable || left.dataType.asInstanceOf[ArrayType].containsNull else true
+  override def nullable: Boolean = !failOnError || left.nullable || right.nullable || nullEntries
 
   override protected def nullSafeEval(h3Any: Any, resolutionAny: Any): Any = {
-    val list = new util.ArrayList[java.lang.Long]()
+    val h3Array = h3Any.asInstanceOf[ArrayData]
     val resolution = resolutionAny.asInstanceOf[Int]
-    var nullFound = false
-    h3Any.asInstanceOf[ArrayData].foreach(LongType, (_, v) =>
-      if (v == null) {
-        nullFound = true
-      } else {
-        list.add(v.asInstanceOf[Long])
-      }
-    )
 
-    if (nullFound) {
+    if (nullEntries && hasNull(h3Array)) {
       null
     } else {
+      val list = new util.ArrayList[java.lang.Long]
+      for (i <- 0 until h3Array.numElements) {
+        list.add(h3Array.getLong(i))
+      }
+
       try {
         ArrayData.toArrayData(H3.getInstance().uncompact(list, resolution).asScala.toArray)
-      }
-      catch {
+      } catch {
         case _: IllegalArgumentException if !failOnError => null
       }
     }
+  }
+
+  private def hasNull(arrayData: ArrayData): Boolean = hasNull(arrayData, arrayData.numElements, 0)
+
+  @tailrec
+  private def hasNull(arrayData: ArrayData, numEntries: Int, index: Int): Boolean = {
+    index < numEntries && (arrayData.isNullAt(index) || hasNull(arrayData, numEntries, index + 1))
   }
 }
