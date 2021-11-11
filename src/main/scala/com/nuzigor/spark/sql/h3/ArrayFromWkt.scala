@@ -75,7 +75,7 @@ case class ArrayFromWkt(wktExpr: Expression, resolutionExpr: Expression,
     val wkt = wktAny.asInstanceOf[UTF8String].toString
     val resolution = resolutionAny.asInstanceOf[Int]
     try {
-      val reader = new WKTReader()
+      val reader = new WKTReader
       val geometry = reader.read(wkt)
       val h3Instance = H3.getInstance()
       val result = getGeometryIndices(h3Instance, geometry, resolution)
@@ -85,9 +85,7 @@ case class ArrayFromWkt(wktExpr: Expression, resolutionExpr: Expression,
         ArrayData.toArrayData(result)
       }
     } catch {
-      case _: ParseException if !failOnError => null
-      case _: LineUndefinedException if !failOnError => null
-      case _: IllegalArgumentException if !failOnError => null
+      case _: ParseException | _: LineUndefinedException | _: IllegalArgumentException if !failOnError => null
     }
   }
 

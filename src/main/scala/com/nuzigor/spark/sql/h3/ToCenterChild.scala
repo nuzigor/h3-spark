@@ -9,9 +9,7 @@ import com.nuzigor.h3.H3
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
 import org.apache.spark.sql.internal.SQLConf
-import org.apache.spark.sql.types.{ArrayType, DataType, IntegerType, LongType}
-
-import scala.collection.JavaConverters._
+import org.apache.spark.sql.types.{DataType, IntegerType, LongType}
 
 /**
  * Returns the center child of h3 index at child resolution.
