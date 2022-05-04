@@ -10,9 +10,9 @@ Installation
 
 Fetch the JAR file from Maven.
 
-    libraryDependencies += "io.github.nuzigor" %% "h3-spark" % "0.7.0"
+    libraryDependencies += "io.github.nuzigor" %% "h3-spark" % "0.8.0"
 
-h3-spark supports only Spark 3+.
+h3-spark supports only Spark 3.2.1+.
 
 Function registration
 --------------
@@ -28,7 +28,7 @@ Config your spark applications with `spark.sql.extensions` option: `spark.sql.ex
 
 For example, to use in pure Spark SQL environment:
 
-    spark-sql --packages io.github.nuzigor:h3-spark_2.12:0.7.0 --conf spark.sql.extensions=com.nuzigor.spark.sql.h3.H3SqlExtensions
+    spark-sql --packages io.github.nuzigor:h3-spark_2.12:0.8.0 --conf spark.sql.extensions=com.nuzigor.spark.sql.h3.H3SqlExtensions
 
 Supported functions
 --------------
