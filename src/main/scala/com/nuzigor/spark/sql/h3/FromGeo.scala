@@ -14,9 +14,9 @@ import org.apache.spark.sql.types.{DataType, DoubleType, IntegerType, LongType}
 /**
  * Returns h3 address from latitude and longitude for at specific resolution.
  *
- * @param latitudeExpr the latitude.
- * @param longitudeExpr the longitude.
- * @param resolutionExpr h3 resolution
+ * @param first the latitude.
+ * @param second the longitude.
+ * @param third h3 resolution
  */
 @ExpressionDescription(
   usage = "_FUNC_(latitude, longitude, resolution) - Returns h3 address from latitude and longitude at target resolution.",
@@ -35,16 +35,15 @@ import org.apache.spark.sql.types.{DataType, DoubleType, IntegerType, LongType}
           617057114733412351
      """,
   since = "0.1.0")
-case class FromGeo(latitudeExpr: Expression, longitudeExpr: Expression, resolutionExpr: Expression,
+case class FromGeo(first: Expression, second: Expression, third: Expression,
                    failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends TernaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
-  def this(latitudeExpr: Expression, longitudeExpr: Expression, resolutionExpr: Expression) =
-    this(latitudeExpr, longitudeExpr, resolutionExpr, SQLConf.get.ansiEnabled)
+  def this(first: Expression, second: Expression, third: Expression) =
+    this(first, second, third, SQLConf.get.ansiEnabled)
 
   override def inputTypes: Seq[DataType] = Seq(DoubleType, DoubleType, IntegerType)
   override def dataType: DataType = LongType
-  override def children: Seq[Expression] = Seq(latitudeExpr, longitudeExpr, resolutionExpr)
   override def nullable: Boolean = !failOnError || super.nullable
 
   override protected def nullSafeEval(latitudeAny: Any, longitudeAny: Any, resolutionAny: Any): Any = {
@@ -57,4 +56,7 @@ case class FromGeo(latitudeExpr: Expression, longitudeExpr: Expression, resoluti
       case _: IllegalArgumentException if !failOnError => null
     }
   }
+
+  override protected def withNewChildrenInternal(newFirst: Expression, newSecond: Expression, newThird: Expression): FromGeo =
+    copy(first = newFirst, second = newSecond, third = newThird)
 }

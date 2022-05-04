@@ -18,8 +18,8 @@ import scala.collection.JavaConverters._
 /**
  * Returns the hollow hexagonal ring centered at origin with sides of length k.
  *
- * @param originExpr h3 origin.
- * @param kExpr k distance.
+ * @param left h3 origin.
+ * @param right k distance.
  */
 @ExpressionDescription(
   usage = "_FUNC_(h3, k) - Returns the hollow hexagonal ring centered at origin with sides of length k.",
@@ -37,15 +37,13 @@ import scala.collection.JavaConverters._
      """,
   group = "array_funcs",
   since = "0.1.0")
-case class HexRing(originExpr: Expression, kExpr: Expression,
+case class HexRing(left: Expression, right: Expression,
                    failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
-  def this(originExpr: Expression, kExpr: Expression) =
-    this(originExpr, kExpr, SQLConf.get.ansiEnabled)
+  def this(left: Expression, right: Expression) =
+    this(left, right, SQLConf.get.ansiEnabled)
 
-  override def left: Expression = originExpr
-  override def right: Expression = kExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, IntegerType)
   override def dataType: DataType = ArrayType(LongType, containsNull = false)
   override def nullable: Boolean = !failOnError || super.nullable
@@ -59,4 +57,6 @@ case class HexRing(originExpr: Expression, kExpr: Expression,
       case _: PentagonEncounteredException if !failOnError => null
     }
   }
+
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): HexRing = copy(left = newLeft, right = newRight)
 }

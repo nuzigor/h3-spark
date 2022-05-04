@@ -14,8 +14,8 @@ import org.apache.spark.sql.types.{DataType, IntegerType, LongType}
 /**
  * Returns the center child of h3 index at child resolution.
  *
- * @param h3Expr h3 index.
- * @param childResolutionExpr child resolution.
+ * @param left h3 index.
+ * @param right child resolution.
  */
 @ExpressionDescription(
   usage = "_FUNC_(h3, resolution) - Returns the center child of h3 index at child resolution.",
@@ -32,15 +32,13 @@ import org.apache.spark.sql.types.{DataType, IntegerType, LongType}
           631492329425011199
      """,
   since = "0.1.0")
-case class ToCenterChild(h3Expr: Expression, childResolutionExpr: Expression,
+case class ToCenterChild(left: Expression, right: Expression,
                          failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
-  def this(h3Expr: Expression, childResolutionExpr: Expression) =
-    this(h3Expr, childResolutionExpr, SQLConf.get.ansiEnabled)
+  def this(left: Expression, right: Expression) =
+    this(left, right, SQLConf.get.ansiEnabled)
 
-  override def left: Expression = h3Expr
-  override def right: Expression = childResolutionExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, IntegerType)
   override def dataType: DataType = LongType
   override def nullable: Boolean = !failOnError || super.nullable
@@ -55,4 +53,6 @@ case class ToCenterChild(h3Expr: Expression, childResolutionExpr: Expression,
       case _: IllegalArgumentException if !failOnError => null
     }
   }
+
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): ToCenterChild = copy(left = newLeft, right = newRight)
 }

@@ -17,8 +17,8 @@ import scala.collection.JavaConverters._
 /**
  * Returns h3 indices contained within of the original index and child resolution.
  *
- * @param h3Expr h3 index.
- * @param childResolutionExpr child resolution.
+ * @param left h3 index.
+ * @param right child resolution.
  */
 @ExpressionDescription(
   usage = "_FUNC_(h3, resolution) - Returns h3 indices contained within of the original index and child resolution.",
@@ -36,15 +36,13 @@ import scala.collection.JavaConverters._
      """,
   group = "array_funcs",
   since = "0.1.0")
-case class ToChildren(h3Expr: Expression, childResolutionExpr: Expression,
+case class ToChildren(left: Expression, right: Expression,
                       failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
-  def this(h3Expr: Expression, childResolutionExpr: Expression) =
-    this(h3Expr, childResolutionExpr, SQLConf.get.ansiEnabled)
+  def this(left: Expression, right: Expression) =
+    this(left, right, SQLConf.get.ansiEnabled)
 
-  override def left: Expression = h3Expr
-  override def right: Expression = childResolutionExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, IntegerType)
   override def dataType: DataType = ArrayType(LongType, containsNull = false)
   override def nullable: Boolean = !failOnError || super.nullable
@@ -65,4 +63,6 @@ case class ToChildren(h3Expr: Expression, childResolutionExpr: Expression,
       case _: IllegalArgumentException if !failOnError => null
     }
   }
+
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): ToChildren = copy(left = newLeft, right = newRight)
 }

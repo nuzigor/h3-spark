@@ -8,21 +8,17 @@ package com.nuzigor.spark.sql.h3
 import com.nuzigor.h3.H3
 import com.uber.h3core.LengthUnit
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
-import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ImplicitCastInputTypes, NullIntolerant}
+import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, ImplicitCastInputTypes, NullIntolerant}
 import org.apache.spark.sql.types.{DataType, DoubleType, LongType}
 
 /**
  * Gives the "great circle" or "haversine" distance between centers of h3 indices in units.
  */
-trait PointDistance
+abstract class PointDistance
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
-  def startExpr: Expression
-  def endExpr: Expression
   def unit: LengthUnit
 
-  override def left: Expression = startExpr
-  override def right: Expression = endExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, LongType)
   override def dataType: DataType = DoubleType
 

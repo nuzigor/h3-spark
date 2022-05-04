@@ -17,8 +17,8 @@ import scala.collection.JavaConverters._
 /**
  * Uncompacts the set of indices using the target resolution.
  *
- * @param h3Expr h3 indices.
- * @param resolutionExpr h3 resolution
+ * @param left h3 indices.
+ * @param right h3 resolution
  */
 @ExpressionDescription(
   usage = "_FUNC_(h3, resolution) - Un-compacts the set of indices using the target resolution.",
@@ -36,17 +36,15 @@ import scala.collection.JavaConverters._
      """,
   group = "array_funcs",
   since = "0.1.0")
-case class Uncompact(h3Expr: Expression, resolutionExpr: Expression,
+case class Uncompact(left: Expression, right: Expression,
                      failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant with ArrayListConversion {
 
-  def this(h3Expr: Expression, resolutionExpr: Expression) =
-    this(h3Expr, resolutionExpr, SQLConf.get.ansiEnabled)
+  def this(left: Expression, right: Expression) =
+    this(left, right, SQLConf.get.ansiEnabled)
 
   @transient private lazy val nullEntries: Boolean = left.dataType.asInstanceOf[ArrayType].containsNull
 
-  override def left: Expression = h3Expr
-  override def right: Expression = resolutionExpr
   override def inputTypes: Seq[DataType] = Seq(ArrayType(LongType), IntegerType)
   override def dataType: DataType = ArrayType(LongType, containsNull = false)
   override def nullable: Boolean = !failOnError || left.nullable || right.nullable || nullEntries
@@ -65,4 +63,6 @@ case class Uncompact(h3Expr: Expression, resolutionExpr: Expression,
       case None => null
     }
   }
+
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): Uncompact = copy(left = newLeft, right = newRight)
 }

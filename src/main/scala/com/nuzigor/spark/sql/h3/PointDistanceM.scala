@@ -11,8 +11,8 @@ import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescript
 /**
  * Gives the "great circle" or "haversine" distance between centers of h3 indices in meters.
  *
- * @param startExpr h3 start.
- * @param endExpr h3 end.
+ * @param left h3 start.
+ * @param right h3 end.
  */
 @ExpressionDescription(
   usage = "_FUNC_(start, end) - Gives the \"great circle\" or \"haversine\" distance between centers of h3 indices in meters.",
@@ -29,6 +29,8 @@ import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescript
           475.9
      """,
   since = "0.7.0")
-case class PointDistanceM(startExpr: Expression, endExpr: Expression) extends PointDistance {
+case class PointDistanceM(left: Expression, right: Expression) extends PointDistance {
   override def unit: LengthUnit = LengthUnit.m
+
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): PointDistanceM = copy(left = newLeft, right = newRight)
 }

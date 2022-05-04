@@ -14,8 +14,8 @@ import org.apache.spark.sql.types.{DataType, IntegerType, LongType}
 /**
  * Returns the parent (coarser) index containing h3.
  *
- * @param h3Expr h3 index.
- * @param parentResolutionExpr parent resolution.
+ * @param left h3 index.
+ * @param right parent resolution.
  */
 @ExpressionDescription(
   usage = "_FUNC_(h3, resolution) - Returns the parent (coarser) index containing h3.",
@@ -32,15 +32,13 @@ import org.apache.spark.sql.types.{DataType, IntegerType, LongType}
           617981530542964735
      """,
   since = "0.1.0")
-case class ToParent(h3Expr: Expression, parentResolutionExpr: Expression,
+case class ToParent(left: Expression, right: Expression,
                     failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
-  def this(h3Expr: Expression, parentResolutionExpr: Expression) =
-    this(h3Expr, parentResolutionExpr, SQLConf.get.ansiEnabled)
+  def this(left: Expression, right: Expression) =
+    this(left, right, SQLConf.get.ansiEnabled)
 
-  override def left: Expression = h3Expr
-  override def right: Expression = parentResolutionExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, IntegerType)
   override def dataType: DataType = LongType
   override def nullable: Boolean = !failOnError || super.nullable
@@ -55,4 +53,6 @@ case class ToParent(h3Expr: Expression, parentResolutionExpr: Expression,
       case _: IllegalArgumentException if !failOnError => null
     }
   }
+
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): ToParent = copy(left = newLeft, right = newRight)
 }

@@ -13,7 +13,7 @@ import org.apache.spark.sql.types.{DataType, IntegerType, LongType}
 /**
  * Returns the resolution of h3 index.
  *
- * @param h3Expr h3 index.
+ * @param child h3 index.
  */
 @ExpressionDescription(
   usage = "_FUNC_(h3) - Returns the resolution of h3 index.",
@@ -28,10 +28,9 @@ import org.apache.spark.sql.types.{DataType, IntegerType, LongType}
           10
      """,
   since = "0.1.0")
-case class GetResolution(h3Expr: Expression)
+case class GetResolution(child: Expression)
   extends UnaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
-  override def child: Expression = h3Expr
   override def inputTypes: Seq[DataType] = Seq(LongType)
   override def dataType: DataType = IntegerType
 
@@ -39,4 +38,6 @@ case class GetResolution(h3Expr: Expression)
     val h3 = h3Any.asInstanceOf[Long]
     H3.getInstance().h3GetResolution(h3)
   }
+
+  override protected def withNewChildInternal(newChild: Expression): GetResolution = copy(child = newChild)
 }

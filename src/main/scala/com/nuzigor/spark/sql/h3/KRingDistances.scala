@@ -16,8 +16,8 @@ import scala.collection.JavaConverters._
 /**
  * Returns h3 indices within k distance of the origin index.
  *
- * @param originExpr h3 origin.
- * @param kExpr k distance.
+ * @param left h3 origin.
+ * @param right k distance.
  */
 @ExpressionDescription(
   usage = "_FUNC_(h3, k) - Returns h3 indices within k distance of the origin index.",
@@ -35,11 +35,9 @@ import scala.collection.JavaConverters._
      """,
   group = "array_funcs",
   since = "0.7.0")
-case class KRingDistances(originExpr: Expression, kExpr: Expression)
+case class KRingDistances(left: Expression, right: Expression)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
-  override def left: Expression = originExpr
-  override def right: Expression = kExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, IntegerType)
   override def dataType: DataType = ArrayType(ArrayType(LongType, containsNull = false), containsNull = false)
 
@@ -49,4 +47,6 @@ case class KRingDistances(originExpr: Expression, kExpr: Expression)
     val distances = H3.getInstance().kRingDistances(origin, k)
     ArrayData.toArrayData(distances.asScala.map(i => ArrayData.toArrayData(i.asScala.toArray)))
   }
+
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): KRingDistances = copy(left = newLeft, right = newRight)
 }

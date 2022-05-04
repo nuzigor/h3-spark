@@ -17,7 +17,7 @@ import scala.collection.JavaConverters._
 /**
  * Compacts the set of indices as best as possible.
  *
- * @param h3Expr h3 indices.
+ * @param child h3 indices.
  */
 @ExpressionDescription(
   usage = "_FUNC_(expr) - Returns the compacted `expr` array on indices.",
@@ -35,15 +35,14 @@ import scala.collection.JavaConverters._
      """,
   group = "array_funcs",
   since = "0.1.0")
-case class Compact(h3Expr: Expression,
+case class Compact(child: Expression,
                    failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends UnaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant with ArrayListConversion {
 
-  def this(h3Expr: Expression) = this(h3Expr, SQLConf.get.ansiEnabled)
+  def this(child: Expression) = this(child, SQLConf.get.ansiEnabled)
 
   @transient private lazy val nullEntries: Boolean = child.dataType.asInstanceOf[ArrayType].containsNull
 
-  override def child: Expression = h3Expr
   override def inputTypes: Seq[DataType] = Seq(ArrayType(LongType))
   override def dataType: DataType = ArrayType(LongType, containsNull = false)
   override def nullable: Boolean = !failOnError || child.nullable || nullEntries
@@ -61,4 +60,6 @@ case class Compact(h3Expr: Expression,
       case None => null
     }
   }
+
+  override protected def withNewChildInternal(newChild: Expression): Compact = copy(child = newChild)
 }
