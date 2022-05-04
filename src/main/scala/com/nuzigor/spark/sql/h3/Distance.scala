@@ -15,8 +15,8 @@ import org.apache.spark.sql.types.{DataType, IntegerType, LongType}
 /**
  * Returns the distance in grid cells between start and end.
  *
- * @param startExpr h3 start.
- * @param endExpr h3 end.
+ * @param left h3 start.
+ * @param right h3 end.
  */
 @ExpressionDescription(
   usage = "_FUNC_(start, end) - Returns the distance in grid cells between start and end.",
@@ -33,13 +33,11 @@ import org.apache.spark.sql.types.{DataType, IntegerType, LongType}
           4
      """,
   since = "0.1.0")
-case class Distance(startExpr: Expression, endExpr: Expression, failOnError: Boolean = SQLConf.get.ansiEnabled)
+case class Distance(left: Expression, right: Expression, failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
-  def this(startExpr: Expression, endExpr: Expression) = this(startExpr, endExpr, SQLConf.get.ansiEnabled)
+  def this(left: Expression, right: Expression) = this(left, right, SQLConf.get.ansiEnabled)
 
-  override def left: Expression = startExpr
-  override def right: Expression = endExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, LongType)
   override def dataType: DataType = IntegerType
   override def nullable: Boolean = !failOnError || super.nullable
@@ -54,4 +52,6 @@ case class Distance(startExpr: Expression, endExpr: Expression, failOnError: Boo
       case _: DistanceUndefinedException if !failOnError => null
     }
   }
+
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): Distance = copy(left = newLeft, right = newRight)
 }

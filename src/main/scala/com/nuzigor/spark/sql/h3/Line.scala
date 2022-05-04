@@ -18,8 +18,8 @@ import scala.collection.JavaConverters._
 /**
  * Returns the line of indexes between start and end.
  *
- * @param startExpr h3 start.
- * @param endExpr h3 end.
+ * @param left h3 start.
+ * @param right h3 end.
  */
 @ExpressionDescription(
   usage = "_FUNC_(start, end) - Returns the line of indexes between start and end.",
@@ -37,15 +37,13 @@ import scala.collection.JavaConverters._
      """,
   group = "array_funcs",
   since = "0.1.0")
-case class Line(startExpr: Expression, endExpr: Expression,
+case class Line(left: Expression, right: Expression,
                 failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
-  def this(startExpr: Expression, endExpr: Expression) =
-    this(startExpr, endExpr, SQLConf.get.ansiEnabled)
+  def this(left: Expression, right: Expression) =
+    this(left, right, SQLConf.get.ansiEnabled)
 
-  override def left: Expression = startExpr
-  override def right: Expression = endExpr
   override def inputTypes: Seq[DataType] = Seq(LongType, LongType)
   override def dataType: DataType = ArrayType(LongType, containsNull = false)
   override def nullable: Boolean = !failOnError || super.nullable
@@ -60,4 +58,6 @@ case class Line(startExpr: Expression, endExpr: Expression,
       case _: LineUndefinedException if !failOnError => null
     }
   }
+
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): Line = copy(left = newLeft, right = newRight)
 }

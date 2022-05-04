@@ -11,7 +11,7 @@ import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescript
 /**
  * Exact area of specific cell in square meters.
  *
- * @param h3Expr h3 index.
+ * @param child h3 index.
  */
 @ExpressionDescription(
   usage = "_FUNC_(h3) - Returns the exact area of specific cell in square meters.",
@@ -26,6 +26,8 @@ import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescript
           14812.0
      """,
   since = "0.7.0")
-case class CellAreaM2(h3Expr: Expression) extends CellArea {
+case class CellAreaM2(child: Expression) extends CellArea {
   override def unit: AreaUnit = AreaUnit.m2
+
+  override protected def withNewChildInternal(newChild: Expression): CellAreaM2 = copy(child = newChild)
 }

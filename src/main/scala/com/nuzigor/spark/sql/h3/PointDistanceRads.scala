@@ -11,8 +11,8 @@ import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescript
 /**
  * Gives the "great circle" or "haversine" distance between centers of h3 indices in radians.
  *
- * @param startExpr h3 start.
- * @param endExpr h3 end.
+ * @param left h3 start.
+ * @param right h3 end.
  */
 @ExpressionDescription(
   usage = "_FUNC_(start, end) - Gives the \"great circle\" or \"haversine\" distance between centers of h3 indices in radians.",
@@ -29,6 +29,8 @@ import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescript
           7.471E-5
      """,
   since = "0.7.0")
-case class PointDistanceRads(startExpr: Expression, endExpr: Expression) extends PointDistance {
+case class PointDistanceRads(left: Expression, right: Expression) extends PointDistance {
   override def unit: LengthUnit = LengthUnit.rads
+
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): PointDistanceRads = copy(left = newLeft, right = newRight)
 }

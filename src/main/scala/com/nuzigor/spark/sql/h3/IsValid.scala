@@ -13,7 +13,7 @@ import org.apache.spark.sql.types.{BooleanType, DataType, LongType}
 /**
  * Returns true if it's a valid h3 index.
  *
- * @param h3Expr h3 index.
+ * @param child h3 index.
  */
 @ExpressionDescription(
   usage = "_FUNC_(h3) - Returns true if it's a valid h3 index.",
@@ -30,10 +30,9 @@ import org.apache.spark.sql.types.{BooleanType, DataType, LongType}
           false
      """,
   since = "0.1.0")
-case class IsValid(h3Expr: Expression)
+case class IsValid(child: Expression)
   extends UnaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
-  override def child: Expression = h3Expr
   override def inputTypes: Seq[DataType] = Seq(LongType)
   override def dataType: DataType = BooleanType
 
@@ -41,4 +40,6 @@ case class IsValid(h3Expr: Expression)
     val h3 = h3Any.asInstanceOf[Long]
     H3.getInstance().h3IsValid(h3)
   }
+
+  override protected def withNewChildInternal(newChild: Expression): IsValid = copy(child = newChild)
 }

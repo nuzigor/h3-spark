@@ -16,8 +16,8 @@ import org.locationtech.jts.io.{ParseException, WKTReader}
 /**
  * Return h3 address from a WKT string.
  *
- * @param wktExpr point in WKT format.
- * @param resolutionExpr h3 resolution
+ * @param left point in WKT format.
+ * @param right h3 resolution
  */
 @ExpressionDescription(
   usage = "_FUNC_(wkt, resolution) - Returns h3 address from a WKT string at target resolution.",
@@ -36,15 +36,13 @@ import org.locationtech.jts.io.{ParseException, WKTReader}
           NULL
      """,
   since = "0.1.0")
-case class FromWkt(wktExpr: Expression, resolutionExpr: Expression,
+case class FromWkt(left: Expression, right: Expression,
                    failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
-  def this(wktExpr: Expression, resolutionExpr: Expression) =
-    this(wktExpr, resolutionExpr, SQLConf.get.ansiEnabled)
+  def this(left: Expression, right: Expression) =
+    this(left, right, SQLConf.get.ansiEnabled)
 
-  override def left: Expression = wktExpr
-  override def right: Expression = resolutionExpr
   override def inputTypes: Seq[DataType] = Seq(StringType, IntegerType)
   override def dataType: DataType = LongType
   override def nullable: Boolean = true
@@ -69,4 +67,6 @@ case class FromWkt(wktExpr: Expression, resolutionExpr: Expression,
       case _: ParseException | _: IllegalArgumentException if !failOnError => null
     }
   }
+
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): FromWkt = copy(left = newLeft, right = newRight)
 }

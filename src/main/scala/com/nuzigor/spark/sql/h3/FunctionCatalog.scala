@@ -87,7 +87,8 @@ object FunctionCatalog {
         ed.note(),
         ed.group(),
         ed.since(),
-        ed.deprecated())
+        ed.deprecated(),
+        ed.source())
     } else {
       new ExpressionInfo(clazz.getCanonicalName, name)
     }

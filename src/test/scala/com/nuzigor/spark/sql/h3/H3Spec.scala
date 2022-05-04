@@ -32,7 +32,7 @@ abstract class H3Spec extends AnyFlatSpec {
   protected val resourceFolder: String = System.getProperty("user.dir") + "/../core/src/test/resources/"
 
   // scalastyle:off magic.number
-  protected val invalidResolutions = Seq(-1, 16)
+  protected val invalidResolutions: Seq[Int] = Seq(-1, 16)
   // scalastyle:on magic.number
 
   protected lazy val sparkSession: SparkSession = SparkSession
@@ -56,9 +56,6 @@ abstract class H3Spec extends AnyFlatSpec {
       }
     }
     (keys, values).zipped.foreach { (k, v) =>
-      if (SQLConf.staticConfKeys.contains(k)) {
-        throw new Exception(s"Cannot modify the value of a static config: $k")
-      }
       conf.setConfString(k, v)
     }
     try f finally {

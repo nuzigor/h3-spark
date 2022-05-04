@@ -23,8 +23,8 @@ import scala.collection.JavaConverters._
 /**
  * Return h3 addresses from a WKT geometry.
  *
- * @param wktExpr geometry in WKT format, supports POINT, MULTIPOINT, LINESTRING, MULTILINESTRING, POLYGON, MULTIPOLYGON.
- * @param resolutionExpr h3 resolution
+ * @param left geometry in WKT format, supports POINT, MULTIPOINT, LINESTRING, MULTILINESTRING, POLYGON, MULTIPOLYGON.
+ * @param right h3 resolution
  */
 @ExpressionDescription(
   usage = "_FUNC_(wkt, resolution) - Returns h3 addresses from a WKT geometry.",
@@ -58,15 +58,13 @@ import scala.collection.JavaConverters._
      """,
   group = "array_funcs",
   since = "0.1.0")
-case class ArrayFromWkt(wktExpr: Expression, resolutionExpr: Expression,
+case class ArrayFromWkt(left: Expression, right: Expression,
                         failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
-  def this(wktExpr: Expression, resolutionExpr: Expression) =
-    this(wktExpr, resolutionExpr, SQLConf.get.ansiEnabled)
+  def this(left: Expression, right: Expression) =
+    this(left, right, SQLConf.get.ansiEnabled)
 
-  override def left: Expression = wktExpr
-  override def right: Expression = resolutionExpr
   override def inputTypes: Seq[DataType] = Seq(StringType, IntegerType)
   override def dataType: DataType = ArrayType(LongType, containsNull = false)
   override def nullable: Boolean = true
@@ -145,4 +143,6 @@ case class ArrayFromWkt(wktExpr: Expression, resolutionExpr: Expression,
           .map(Long2long)
       })
   }
+
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): ArrayFromWkt = copy(left = newLeft, right = newRight)
 }
