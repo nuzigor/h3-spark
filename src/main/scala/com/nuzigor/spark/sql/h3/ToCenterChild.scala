@@ -6,6 +6,7 @@
 package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.h3.H3
+import com.uber.h3core.exceptions.H3Exception
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
 import org.apache.spark.sql.internal.SQLConf
@@ -47,10 +48,10 @@ case class ToCenterChild(left: Expression, right: Expression,
     val h3 = h3Any.asInstanceOf[Long]
     val childResolution = childResolutionAny.asInstanceOf[Int]
     try {
-      H3.getInstance().h3ToCenterChild(h3, childResolution)
+      H3.getInstance().cellToCenterChild(h3, childResolution)
     }
     catch {
-      case _: IllegalArgumentException if !failOnError => null
+      case _: H3Exception | _: IllegalArgumentException if !failOnError => null
     }
   }
 

@@ -6,7 +6,7 @@
 package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.h3.H3
-import com.uber.h3core.exceptions.LineUndefinedException
+import com.uber.h3core.exceptions.H3Exception
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
 import org.apache.spark.sql.catalyst.util.ArrayData
@@ -52,10 +52,10 @@ case class Line(left: Expression, right: Expression,
     val start = startAny.asInstanceOf[Long]
     val end = endAny.asInstanceOf[Long]
     try {
-      ArrayData.toArrayData(H3.getInstance().h3Line(start, end).asScala.toArray)
+      ArrayData.toArrayData(H3.getInstance().gridPathCells(start, end).asScala.toArray)
     }
     catch {
-      case _: LineUndefinedException if !failOnError => null
+      case _: H3Exception if !failOnError => null
     }
   }
 

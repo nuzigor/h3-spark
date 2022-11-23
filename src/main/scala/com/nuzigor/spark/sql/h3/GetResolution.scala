@@ -36,7 +36,7 @@ case class GetResolution(child: Expression)
 
   override protected def nullSafeEval(h3Any: Any): Any = {
     val h3 = h3Any.asInstanceOf[Long]
-    H3.getInstance().h3GetResolution(h3)
+    H3.getInstance().getResolution(h3)
   }
 
   override protected def withNewChildInternal(newChild: Expression): GetResolution = copy(child = newChild)

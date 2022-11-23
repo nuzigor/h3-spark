@@ -6,7 +6,7 @@
 package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.spark.sql.h3.functions._
-import com.uber.h3core.exceptions.DistanceUndefinedException
+import com.uber.h3core.exceptions.H3Exception
 import org.apache.spark.sql.functions.column
 import org.apache.spark.sql.internal.SQLConf
 
@@ -15,7 +15,7 @@ class DistanceSpec extends H3Spec {
     val start = 622485130170957823L
     val end = 622485130170302463L
     val df = sparkSession.sql(s"SELECT $functionName(${start}l, ${end}l)")
-    val distance = df.first().getAs[Int](0)
+    val distance = df.first().getAs[Long](0)
     assert(distance === 4)
   }
 
@@ -47,7 +47,7 @@ class DistanceSpec extends H3Spec {
     import sparkSession.implicits._
     val df = Seq((622485130170957823L, 622485130170302463L)).toDF("start", "end")
     val result = df.select(h3_distance(column("start"), column("end")).alias("h3"))
-    val distance = result.first().getAs[Int](0)
+    val distance = result.first().getAs[Long](0)
     assert(distance === 4)
   }
 
@@ -60,7 +60,7 @@ class DistanceSpec extends H3Spec {
 
   it should "fail for invalid parameters when ansi enabled" in {
     withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
-      assertThrows[DistanceUndefinedException] {
+      assertThrows[H3Exception] {
         val start = 612630286896726015L
         val end = 612630286919794687L
         sparkSession.sql(s"SELECT $functionName(${start}l, ${end}l)").collect()

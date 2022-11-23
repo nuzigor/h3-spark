@@ -6,7 +6,7 @@
 package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.h3.H3
-import com.uber.h3core.exceptions.DistanceUndefinedException
+import com.uber.h3core.exceptions.H3Exception
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
 import org.apache.spark.sql.internal.SQLConf
@@ -39,17 +39,17 @@ case class Distance(left: Expression, right: Expression, failOnError: Boolean = 
   def this(left: Expression, right: Expression) = this(left, right, SQLConf.get.ansiEnabled)
 
   override def inputTypes: Seq[DataType] = Seq(LongType, LongType)
-  override def dataType: DataType = IntegerType
+  override def dataType: DataType = LongType
   override def nullable: Boolean = !failOnError || super.nullable
 
   override protected def nullSafeEval(originAny: Any, endAny: Any): Any = {
     val start = originAny.asInstanceOf[Long]
     val end = endAny.asInstanceOf[Long]
     try {
-      H3.getInstance().h3Distance(start, end)
+      H3.getInstance().gridDistance(start, end)
     }
     catch {
-      case _: DistanceUndefinedException if !failOnError => null
+      case _: H3Exception if !failOnError => null
     }
   }
 

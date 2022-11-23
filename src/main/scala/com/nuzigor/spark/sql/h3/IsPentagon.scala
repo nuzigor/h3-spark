@@ -36,7 +36,7 @@ case class IsPentagon(child: Expression)
 
   override protected def nullSafeEval(h3Any: Any): Any = {
     val h3 = h3Any.asInstanceOf[Long]
-    H3.getInstance().h3IsPentagon(h3)
+    H3.getInstance().isPentagon(h3)
   }
 
   override protected def withNewChildInternal(newChild: Expression): IsPentagon = copy(child = newChild)

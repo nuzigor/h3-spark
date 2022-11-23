@@ -6,7 +6,7 @@
 package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.spark.sql.h3.functions._
-import com.uber.h3core.exceptions.LineUndefinedException
+import com.uber.h3core.exceptions.H3Exception
 import org.apache.spark.sql.functions.column
 import org.apache.spark.sql.internal.SQLConf
 
@@ -66,7 +66,7 @@ class LineSpec extends H3Spec {
 
   it should "fail for invalid parameters when ansi enabled" in {
     withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
-      assertThrows[LineUndefinedException] {
+      assertThrows[H3Exception] {
         val start = 612630286896726015L
         val end = 612630286919794687L
         sparkSession.sql(s"SELECT $functionName(${start}l, ${end}l)").collect()

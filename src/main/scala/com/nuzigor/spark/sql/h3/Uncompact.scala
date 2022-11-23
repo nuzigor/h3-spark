@@ -55,7 +55,7 @@ case class Uncompact(left: Expression, right: Expression,
     toLongArrayList(h3Array, nullEntries) match {
       case Some(list) =>
         try {
-          ArrayData.toArrayData(H3.getInstance().uncompact(list, resolution).asScala.toArray)
+          ArrayData.toArrayData(H3.getInstance().uncompactCells(list, resolution).asScala.toArray)
         } catch {
           case _: IllegalArgumentException if !failOnError => null
         }

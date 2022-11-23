@@ -6,7 +6,7 @@
 package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.spark.sql.h3.functions._
-import com.uber.h3core.exceptions.PentagonEncounteredException
+import com.uber.h3core.exceptions.H3Exception
 import org.apache.spark.sql.functions.column
 import org.apache.spark.sql.internal.SQLConf
 
@@ -53,7 +53,7 @@ class HexRingSpec extends H3Spec {
 
   it should "fail for invalid parameters when ansi enabled" in {
     withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
-      assertThrows[PentagonEncounteredException] {
+      assertThrows[H3Exception] {
         val h3 = 580986342163349503L
         sparkSession.sql(s"SELECT $functionName(${h3}l, 2)").collect()
       }

@@ -9,7 +9,7 @@ ThisBuild / description := "Brings H3 - Hexagonal hierarchical geospatial indexi
 ThisBuild / homepage := Some(url("https://github.com/nuzigor/h3-spark"))
 ThisBuild / licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
 ThisBuild / versionScheme := Some("semver-spec")
-ThisBuild / version      := "0.8.0"
+ThisBuild / version      := "0.9.0"
 
 ThisBuild / developers := List(
   Developer(
@@ -39,17 +39,17 @@ ThisBuild / publishTo := {
 }
 ThisBuild / publishMavenStyle := true
 
-ThisBuild / scalaVersion := "2.12.15"
+ThisBuild / scalaVersion := "2.12.17"
 
 lazy val root = (project in file("."))
   .settings(
     name := "h3-spark"
   )
 
-val sparkVersion = "3.2.1"
-val h3Version = "3.7.2"
-val jtsVersion = "1.18.2"
-val scalatestVersion = "3.2.11"
+val sparkVersion = "3.2.2"
+val h3Version = "4.0.2"
+val jtsVersion = "1.19.0"
+val scalatestVersion = "3.2.14"
 val scalacheckVersion = "1.15.4"
 
 libraryDependencies ++= Seq(

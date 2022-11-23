@@ -7,8 +7,8 @@ package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.h3.H3
 import com.uber.h3core.H3Core
-import com.uber.h3core.exceptions.LineUndefinedException
-import com.uber.h3core.util.GeoCoord
+import com.uber.h3core.exceptions.H3Exception
+import com.uber.h3core.util.LatLng
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
 import org.apache.spark.sql.catalyst.util.ArrayData
@@ -83,7 +83,7 @@ case class ArrayFromWkt(left: Expression, right: Expression,
         ArrayData.toArrayData(result)
       }
     } catch {
-      case _: ParseException | _: LineUndefinedException | _: IllegalArgumentException if !failOnError => null
+      case _: ParseException | _: H3Exception | _: IllegalArgumentException if !failOnError => null
     }
   }
 
@@ -91,7 +91,7 @@ case class ArrayFromWkt(left: Expression, right: Expression,
     geometry match {
       case geometry if geometry.isEmpty => Array.empty[Long]
       case polygon: Polygon => getPolygonIndices(h3Instance, polygon, resolution).distinct
-      case point: Point => Array(h3Instance.geoToH3(point.getY, point.getX, resolution))
+      case point: Point => Array(h3Instance.latLngToCell(point.getY, point.getX, resolution))
       case multiPoint: MultiPoint => gemMultiPointIndices(h3Instance, multiPoint, resolution)
       case multiPolygon: MultiPolygon => getMultiPolygonIndices(h3Instance, multiPolygon, resolution)
       case lineString: LineString => getLineStringIndices(h3Instance, lineString, resolution).distinct.toArray
@@ -119,26 +119,26 @@ case class ArrayFromWkt(left: Expression, right: Expression,
   private def gemMultiPointIndices(h3Instance: H3Core, multiPoint: MultiPoint, resolution: Int) = {
     (0 until multiPoint.getNumGeometries)
       .map(multiPoint.getGeometryN(_).getCoordinate)
-      .map(c => h3Instance.geoToH3(c.y, c.x, resolution))
+      .map(c => h3Instance.latLngToCell(c.y, c.x, resolution))
       .distinct
       .toArray
   }
 
   private def getPolygonIndices(h3Instance: H3Core, polygon: Polygon, resolution: Int) = {
-    val toGeoJavaList = (ring: LinearRing) => ring.getCoordinates.map(c => new GeoCoord(c.y, c.x)).toList.asJava
+    val toGeoJavaList = (ring: LinearRing) => ring.getCoordinates.map(c => new LatLng(c.y, c.x)).toList.asJava
     val coordinates = toGeoJavaList(polygon.getExteriorRing)
     val holes = (0 until polygon.getNumInteriorRing).map(i => toGeoJavaList(polygon.getInteriorRingN(i))).toList.asJava
-    h3Instance.polyfill(coordinates, holes, resolution).asScala.toArray
+    h3Instance.polygonToCells(coordinates, holes, resolution).asScala.toArray
   }
 
   private def getLineStringIndices(h3Instance: H3Core, lineString: LineString, resolution: Int) = {
-    val indices = lineString.getCoordinates.map(c => h3Instance.geoToH3(c.y, c.x, resolution))
+    val indices = lineString.getCoordinates.map(c => h3Instance.latLngToCell(c.y, c.x, resolution))
     (0 until indices.length - 1)
       .flatMap(i => {
         val start = indices(i)
         val end = indices(i + 1)
         h3Instance
-          .h3Line(start, end)
+          .gridPathCells(start, end)
           .asScala
           .map(Long2long)
       })

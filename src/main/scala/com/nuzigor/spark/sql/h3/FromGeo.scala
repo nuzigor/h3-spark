@@ -51,7 +51,7 @@ case class FromGeo(first: Expression, second: Expression, third: Expression,
     val longitude = longitudeAny.asInstanceOf[Double]
     val resolution = resolutionAny.asInstanceOf[Int]
     try {
-      H3.getInstance().geoToH3(latitude, longitude, resolution)
+      H3.getInstance().latLngToCell(latitude, longitude, resolution)
     } catch {
       case _: IllegalArgumentException if !failOnError => null
     }

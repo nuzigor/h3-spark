@@ -38,7 +38,7 @@ case class IsValid(child: Expression)
 
   override protected def nullSafeEval(h3Any: Any): Any = {
     val h3 = h3Any.asInstanceOf[Long]
-    H3.getInstance().h3IsValid(h3)
+    H3.getInstance().isValidCell(h3)
   }
 
   override protected def withNewChildInternal(newChild: Expression): IsValid = copy(child = newChild)

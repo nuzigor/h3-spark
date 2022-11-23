@@ -44,7 +44,7 @@ case class KRing(left: Expression, right: Expression)
   override protected def nullSafeEval(originAny: Any, kAny: Any): Any = {
     val origin = originAny.asInstanceOf[Long]
     val k = kAny.asInstanceOf[Int]
-    ArrayData.toArrayData(H3.getInstance().kRing(origin, k).asScala.toArray)
+    ArrayData.toArrayData(H3.getInstance().gridDisk(origin, k).asScala.toArray)
   }
 
   override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): KRing = copy(left = newLeft, right = newRight)

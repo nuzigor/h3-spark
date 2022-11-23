@@ -6,6 +6,7 @@
 package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.spark.sql.h3.functions._
+import com.uber.h3core.exceptions.H3Exception
 import org.apache.spark.sql.functions.column
 import org.apache.spark.sql.internal.SQLConf
 
@@ -51,7 +52,7 @@ class CompactSpec extends H3Spec {
 
   it should "fail for invalid parameters when ansi enabled" in {
     withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
-      assertThrows[IllegalArgumentException] {
+      assertThrows[H3Exception] {
         val h3 = 622485130170302463L
         val ringCall = s"h3_k_ring(${h3}l, 5)"
         sparkSession.sql(s"SELECT $functionName(concat($ringCall, $ringCall))").collect()

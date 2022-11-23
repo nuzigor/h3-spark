@@ -47,7 +47,7 @@ case class ToParent(left: Expression, right: Expression,
     val h3 = h3Any.asInstanceOf[Long]
     val parentResolution = parentResolutionAny.asInstanceOf[Int]
     try {
-      H3.getInstance().h3ToParent(h3, parentResolution)
+      H3.getInstance().cellToParent(h3, parentResolution)
     }
     catch {
       case _: IllegalArgumentException if !failOnError => null

@@ -60,7 +60,7 @@ case class FromWkt(left: Expression, right: Expression,
         if (coordinate == null) {
           null
         } else {
-          H3.getInstance().geoToH3(coordinate.y, coordinate.x, resolution)
+          H3.getInstance().latLngToCell(coordinate.y, coordinate.x, resolution)
         }
       }
     } catch {

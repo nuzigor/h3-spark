@@ -44,7 +44,7 @@ case class KRingDistances(left: Expression, right: Expression)
   override protected def nullSafeEval(originAny: Any, kAny: Any): Any = {
     val origin = originAny.asInstanceOf[Long]
     val k = kAny.asInstanceOf[Int]
-    val distances = H3.getInstance().kRingDistances(origin, k)
+    val distances = H3.getInstance().gridDiskDistances(origin, k)
     ArrayData.toArrayData(distances.asScala.map(i => ArrayData.toArrayData(i.asScala.toArray)))
   }
 

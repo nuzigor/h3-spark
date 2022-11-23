@@ -26,8 +26,8 @@ abstract class PointDistance
     val start = originAny.asInstanceOf[Long]
     val end = endAny.asInstanceOf[Long]
     val h3Instance = H3.getInstance()
-    val startGeo = h3Instance.h3ToGeo(start)
-    val endGeo = h3Instance.h3ToGeo(end)
-    h3Instance.pointDist(startGeo, endGeo, unit)
+    val startGeo = h3Instance.cellToLatLng(start)
+    val endGeo = h3Instance.cellToLatLng(end)
+    h3Instance.greatCircleDistance(startGeo, endGeo, unit)
   }
 }
