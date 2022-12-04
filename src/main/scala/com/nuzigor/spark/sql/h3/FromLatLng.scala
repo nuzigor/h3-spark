@@ -34,9 +34,9 @@ import org.apache.spark.sql.types.{DataType, DoubleType, IntegerType, LongType}
          > SELECT _FUNC_(81.34534d, -164.64459d, 9);
           617057114733412351
      """,
-  since = "0.1.0")
-case class FromGeo(first: Expression, second: Expression, third: Expression,
-                   failOnError: Boolean = SQLConf.get.ansiEnabled)
+  since = "0.9.0")
+case class FromLatLng(first: Expression, second: Expression, third: Expression,
+                      failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends TernaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
   def this(first: Expression, second: Expression, third: Expression) =
@@ -57,6 +57,6 @@ case class FromGeo(first: Expression, second: Expression, third: Expression,
     }
   }
 
-  override protected def withNewChildrenInternal(newFirst: Expression, newSecond: Expression, newThird: Expression): FromGeo =
+  override protected def withNewChildrenInternal(newFirst: Expression, newSecond: Expression, newThird: Expression): FromLatLng =
     copy(first = newFirst, second = newSecond, third = newThird)
 }

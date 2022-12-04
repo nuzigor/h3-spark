@@ -29,7 +29,7 @@ import scala.collection.JavaConverters._
      """,
   examples = """
        Examples:
-         > SELECT _FUNC_(h3_compact(h3_k_ring(622485130170302463l, 3)), 10);
+         > SELECT _FUNC_(h3_compact(h3_grid_disk(622485130170302463l, 3)), 10);
           [622485130170761215,622485130170793983,622485130171482111,622485130151526399,...]
          > SELECT _FUNC_(array(0), 10);
           []

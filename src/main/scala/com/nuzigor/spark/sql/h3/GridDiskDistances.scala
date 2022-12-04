@@ -31,21 +31,22 @@ import scala.collection.JavaConverters._
   examples = """
        Examples:
          > SELECT _FUNC_(622485130170302463l, 1);
-          [622485130170302463,622485130171842559,622485130171711487,622485130170171391,622485130170105855,622485130170236927,622485130171252735]
+          [[622485130170302463],[622485130171842559,622485130171711487,622485130170171391,622485130170105855,622485130170236927,622485130171252735]]
      """,
   group = "array_funcs",
-  since = "0.1.0")
-case class KRing(left: Expression, right: Expression)
+  since = "0.9.0")
+case class GridDiskDistances(left: Expression, right: Expression)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
   override def inputTypes: Seq[DataType] = Seq(LongType, IntegerType)
-  override def dataType: DataType = ArrayType(LongType, containsNull = false)
+  override def dataType: DataType = ArrayType(ArrayType(LongType, containsNull = false), containsNull = false)
 
   override protected def nullSafeEval(originAny: Any, kAny: Any): Any = {
     val origin = originAny.asInstanceOf[Long]
     val k = kAny.asInstanceOf[Int]
-    ArrayData.toArrayData(H3.getInstance().gridDisk(origin, k).asScala.toArray)
+    val distances = H3.getInstance().gridDiskDistances(origin, k)
+    ArrayData.toArrayData(distances.asScala.map(i => ArrayData.toArrayData(i.asScala.toArray)))
   }
 
-  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): KRing = copy(left = newLeft, right = newRight)
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): GridDiskDistances = copy(left = newLeft, right = newRight)
 }

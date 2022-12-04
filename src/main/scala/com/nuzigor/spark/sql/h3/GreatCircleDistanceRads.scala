@@ -9,13 +9,13 @@ import com.uber.h3core.LengthUnit
 import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescription}
 
 /**
- * Gives the "great circle" or "haversine" distance between centers of h3 indices in kilometers.
+ * Gives the "great circle" or "haversine" distance between centers of h3 indices in radians.
  *
  * @param left h3 start.
  * @param right h3 end.
  */
 @ExpressionDescription(
-  usage = "_FUNC_(start, end) - Gives the \"great circle\" or \"haversine\" distance between centers of h3 indices in kilometers.",
+  usage = "_FUNC_(start, end) - Gives the \"great circle\" or \"haversine\" distance between centers of h3 indices in radians.",
   arguments = """
        Arguments:
          * start - start h3 index
@@ -26,11 +26,11 @@ import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescript
   examples = """
        Examples:
          > SELECT _FUNC_(622485130170302463l, 622485130170957823l);
-          0.475
+          7.471E-5
      """,
   since = "0.7.0")
-case class PointDistanceKm(left: Expression, right: Expression) extends PointDistance {
-  override def unit: LengthUnit = LengthUnit.km
+case class GreatCircleDistanceRads(left: Expression, right: Expression) extends GreatCircleDistance {
+  override def unit: LengthUnit = LengthUnit.rads
 
-  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): PointDistanceKm = copy(left = newLeft, right = newRight)
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): GreatCircleDistanceRads = copy(left = newLeft, right = newRight)
 }

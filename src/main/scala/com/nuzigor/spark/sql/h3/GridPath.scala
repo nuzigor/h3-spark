@@ -36,9 +36,9 @@ import scala.collection.JavaConverters._
           [622485130170302463,622485130170171391,622485130170204159,622485130171088895,622485130170957823]
      """,
   group = "array_funcs",
-  since = "0.1.0")
-case class Line(left: Expression, right: Expression,
-                failOnError: Boolean = SQLConf.get.ansiEnabled)
+  since = "0.9.0")
+case class GridPath(left: Expression, right: Expression,
+                    failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
   def this(left: Expression, right: Expression) =
@@ -59,5 +59,5 @@ case class Line(left: Expression, right: Expression,
     }
   }
 
-  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): Line = copy(left = newLeft, right = newRight)
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): GridPath = copy(left = newLeft, right = newRight)
 }
