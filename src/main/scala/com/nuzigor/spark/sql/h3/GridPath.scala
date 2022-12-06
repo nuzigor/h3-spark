@@ -6,7 +6,7 @@
 package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.h3.H3
-import com.uber.h3core.exceptions.LineUndefinedException
+import com.uber.h3core.exceptions.H3Exception
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
 import org.apache.spark.sql.catalyst.util.ArrayData
@@ -36,9 +36,9 @@ import scala.collection.JavaConverters._
           [622485130170302463,622485130170171391,622485130170204159,622485130171088895,622485130170957823]
      """,
   group = "array_funcs",
-  since = "0.1.0")
-case class Line(left: Expression, right: Expression,
-                failOnError: Boolean = SQLConf.get.ansiEnabled)
+  since = "0.9.0")
+case class GridPath(left: Expression, right: Expression,
+                    failOnError: Boolean = SQLConf.get.ansiEnabled)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
   def this(left: Expression, right: Expression) =
@@ -52,12 +52,12 @@ case class Line(left: Expression, right: Expression,
     val start = startAny.asInstanceOf[Long]
     val end = endAny.asInstanceOf[Long]
     try {
-      ArrayData.toArrayData(H3.getInstance().h3Line(start, end).asScala.toArray)
+      ArrayData.toArrayData(H3.getInstance().gridPathCells(start, end).asScala.toArray)
     }
     catch {
-      case _: LineUndefinedException if !failOnError => null
+      case _: H3Exception if !failOnError => null
     }
   }
 
-  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): Line = copy(left = newLeft, right = newRight)
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): GridPath = copy(left = newLeft, right = newRight)
 }

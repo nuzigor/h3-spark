@@ -29,7 +29,7 @@ import scala.collection.JavaConverters._
      """,
   examples = """
        Examples:
-         > SELECT _FUNC_(h3_compact(h3_k_ring(622485130170302463l, 3)), 10);
+         > SELECT _FUNC_(h3_compact(h3_grid_disk(622485130170302463l, 3)), 10);
           [622485130170761215,622485130170793983,622485130171482111,622485130151526399,...]
          > SELECT _FUNC_(array(0), 10);
           []
@@ -55,7 +55,7 @@ case class Uncompact(left: Expression, right: Expression,
     toLongArrayList(h3Array, nullEntries) match {
       case Some(list) =>
         try {
-          ArrayData.toArrayData(H3.getInstance().uncompact(list, resolution).asScala.toArray)
+          ArrayData.toArrayData(H3.getInstance().uncompactCells(list, resolution).asScala.toArray)
         } catch {
           case _: IllegalArgumentException if !failOnError => null
         }

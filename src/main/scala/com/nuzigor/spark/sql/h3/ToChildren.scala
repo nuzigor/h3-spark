@@ -6,6 +6,7 @@
 package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.h3.H3
+import com.uber.h3core.exceptions.H3Exception
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{BinaryExpression, Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant}
 import org.apache.spark.sql.catalyst.util.ArrayData
@@ -51,16 +52,15 @@ case class ToChildren(left: Expression, right: Expression,
     val h3 = h3Any.asInstanceOf[Long]
     val childResolution = childResolutionAny.asInstanceOf[Int]
     try {
-      val children = H3.getInstance().h3ToChildren(h3, childResolution).asScala.toArray
+      val children = H3.getInstance().cellToChildren(h3, childResolution).asScala.toArray
       if (children.isEmpty) {
-        throw new IllegalArgumentException(
-          s"childRes $childResolution must be between ${H3.getInstance().h3GetResolution(h3)} and 15, inclusive")
+        throw new IllegalArgumentException(s"can't get children for invalid $h3")
       } else {
         ArrayData.toArrayData(children)
       }
     }
     catch {
-      case _: IllegalArgumentException if !failOnError => null
+      case _: H3Exception | _: IllegalArgumentException if !failOnError => null
     }
   }
 

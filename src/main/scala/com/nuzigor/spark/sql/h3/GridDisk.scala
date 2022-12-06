@@ -34,8 +34,8 @@ import scala.collection.JavaConverters._
           [622485130170302463,622485130171842559,622485130171711487,622485130170171391,622485130170105855,622485130170236927,622485130171252735]
      """,
   group = "array_funcs",
-  since = "0.1.0")
-case class KRing(left: Expression, right: Expression)
+  since = "0.9.0")
+case class GridDisk(left: Expression, right: Expression)
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
   override def inputTypes: Seq[DataType] = Seq(LongType, IntegerType)
@@ -44,8 +44,8 @@ case class KRing(left: Expression, right: Expression)
   override protected def nullSafeEval(originAny: Any, kAny: Any): Any = {
     val origin = originAny.asInstanceOf[Long]
     val k = kAny.asInstanceOf[Int]
-    ArrayData.toArrayData(H3.getInstance().kRing(origin, k).asScala.toArray)
+    ArrayData.toArrayData(H3.getInstance().gridDisk(origin, k).asScala.toArray)
   }
 
-  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): KRing = copy(left = newLeft, right = newRight)
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): GridDisk = copy(left = newLeft, right = newRight)
 }

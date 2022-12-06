@@ -21,8 +21,8 @@ object functions {
    * @param resolution target resolution
    * @return h3 address
    */
-  def h3_from_geo(latitude: Column, longitude: Column, resolution: Int): Column = withExpr {
-    FromGeo(latitude.expr, longitude.expr, Literal(resolution))
+  def h3_from_latlng(latitude: Column, longitude: Column, resolution: Int): Column = withExpr {
+    FromLatLng(latitude.expr, longitude.expr, Literal(resolution))
   }
 
   /**
@@ -51,8 +51,8 @@ object functions {
    * @param k distance
    * @return array of h3 indices
    */
-  def h3_k_ring(origin: Column, k: Int): Column = withExpr {
-    KRing(origin.expr, Literal(k))
+  def h3_grid_disk(origin: Column, k: Int): Column = withExpr {
+    GridDisk(origin.expr, Literal(k))
   }
 
   /**
@@ -61,8 +61,8 @@ object functions {
    * @param k distance
    * @return array of arrays of h3 indices
    */
-  def h3_k_ring_distances(origin: Column, k: Int): Column = withExpr {
-    KRingDistances(origin.expr, Literal(k))
+  def h3_grid_disk_distances(origin: Column, k: Int): Column = withExpr {
+    GridDiskDistances(origin.expr, Literal(k))
   }
 
   /**
@@ -71,8 +71,8 @@ object functions {
    * @param k distance
    * @return array of h3 indices
    */
-  def h3_hex_ring(origin: Column, k: Int): Column = withExpr {
-    HexRing(origin.expr, Literal(k))
+  def h3_grid_ring(origin: Column, k: Int): Column = withExpr {
+    GridRing(origin.expr, Literal(k))
   }
 
   /**
@@ -81,8 +81,8 @@ object functions {
    * @param end end h3 index
    * @return array of h3 indices
    */
-  def h3_line(start: Column, end: Column): Column = withExpr {
-    Line(start.expr, end.expr)
+  def h3_grid_path(start: Column, end: Column): Column = withExpr {
+    GridPath(start.expr, end.expr)
   }
 
   /**
@@ -91,8 +91,8 @@ object functions {
    * @param end end h3 index
    * @return distance between cells
    */
-  def h3_distance(start: Column, end: Column): Column = withExpr {
-    Distance(start.expr, end.expr)
+  def h3_grid_distance(start: Column, end: Column): Column = withExpr {
+    GridDistance(start.expr, end.expr)
   }
 
   /**
@@ -102,7 +102,7 @@ object functions {
    * @return distance between centers of cells in radians
    */
   def h3_distance_rads(start: Column, end: Column): Column = withExpr {
-    PointDistanceRads(start.expr, end.expr)
+    GreatCircleDistanceRads(start.expr, end.expr)
   }
 
   /**
@@ -112,7 +112,7 @@ object functions {
    * @return distance between centers of cells in meters
    */
   def h3_distance_m(start: Column, end: Column): Column = withExpr {
-    PointDistanceM(start.expr, end.expr)
+    GreatCircleDistanceM(start.expr, end.expr)
   }
 
   /**
@@ -122,7 +122,7 @@ object functions {
    * @return distance between centers of cells in kilometers
    */
   def h3_distance_km(start: Column, end: Column): Column = withExpr {
-    PointDistanceKm(start.expr, end.expr)
+    GreatCircleDistanceKm(start.expr, end.expr)
   }
 
   /**

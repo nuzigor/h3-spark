@@ -30,9 +30,9 @@ class ToChildrenSpec extends H3Spec {
     assert(df.first().isNullAt(0))
   }
 
-  it should "not return null for invalid h3" in {
+  it should "return null for invalid h3" in {
     val df = sparkSession.sql(s"SELECT $functionName(0l, 2)")
-    assert(!df.first().isNullAt(0))
+    assert(df.first().isNullAt(0))
   }
 
   it should "support compiled function" in {

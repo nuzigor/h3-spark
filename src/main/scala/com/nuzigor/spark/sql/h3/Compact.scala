@@ -6,6 +6,7 @@
 package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.h3.H3
+import com.uber.h3core.exceptions.H3Exception
 import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
 import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant, UnaryExpression}
 import org.apache.spark.sql.catalyst.util.ArrayData
@@ -28,7 +29,7 @@ import scala.collection.JavaConverters._
      """,
   examples = """
        Examples:
-         > SELECT _FUNC_(h3_k_ring(622485130170302463l, 3));
+         > SELECT _FUNC_(h3_grid_disk(622485130170302463l, 3));
           [622485130170761215,622485130170793983,622485130171482111,622485130151526399,...]
          > SELECT _FUNC_(array(0));
           []
@@ -52,9 +53,9 @@ case class Compact(child: Expression,
     toLongArrayList(h3Array, nullEntries) match {
       case Some(list) =>
         try {
-          ArrayData.toArrayData(H3.getInstance().compact(list).asScala.toArray)
+          ArrayData.toArrayData(H3.getInstance().compactCells(list).asScala.toArray)
         } catch {
-          case _: IllegalArgumentException if !failOnError => null
+          case _: H3Exception if !failOnError => null
         }
 
       case None => null

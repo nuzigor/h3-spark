@@ -6,29 +6,19 @@
 package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.spark.sql.h3.functions._
-import com.uber.h3core.exceptions.DistanceUndefinedException
+import com.uber.h3core.exceptions.H3Exception
 import org.apache.spark.sql.functions.column
 import org.apache.spark.sql.internal.SQLConf
 
-class DistanceSpec extends H3Spec {
-  it should "return distance in hexes between start and end indices" in {
+class GridPathSpec extends H3Spec {
+  it should "return indices line between start and end indices" in {
     val start = 622485130170957823L
     val end = 622485130170302463L
     val df = sparkSession.sql(s"SELECT $functionName(${start}l, ${end}l)")
-    val distance = df.first().getAs[Int](0)
-    assert(distance === 4)
-  }
-
-  it should "return null for invalid start" in {
-    val end = 622485130170302463L
-    val df = sparkSession.sql(s"SELECT $functionName(-1, ${end}l)")
-    assert(df.first().isNullAt(0))
-  }
-
-  it should "return null for invalid end" in {
-    val start = 622485130170957823L
-    val df = sparkSession.sql(s"SELECT $functionName(${start}l, -1)")
-    assert(df.first().isNullAt(0))
+    val line = df.first().getAs[Seq[Long]](0)
+    assert(line.size === 5)
+    assert(line.contains(start))
+    assert(line.contains(end))
   }
 
   it should "return null for null start" in {
@@ -43,12 +33,28 @@ class DistanceSpec extends H3Spec {
     assert(df.first().isNullAt(0))
   }
 
+  it should "return null for invalid start" in {
+    val end = 622485130170302463L
+    val df = sparkSession.sql(s"SELECT $functionName(-1l, ${end}l)")
+    assert(df.first().isNullAt(0))
+  }
+
+  it should "return null for invalid end" in {
+    val start = 622485130170957823L
+    val df = sparkSession.sql(s"SELECT $functionName(${start}l, -1l)")
+    assert(df.first().isNullAt(0))
+  }
+
   it should "support compiled function" in {
     import sparkSession.implicits._
-    val df = Seq((622485130170957823L, 622485130170302463L)).toDF("start", "end")
-    val result = df.select(h3_distance(column("start"), column("end")).alias("h3"))
-    val distance = result.first().getAs[Int](0)
-    assert(distance === 4)
+    val start = 622485130170957823L
+    val end = 622485130170302463L
+    val df = Seq((start, end)).toDF("start", "end")
+    val result = df.select(h3_grid_path(column("start"), column("end")).alias("line"))
+    val line = result.first().getAs[Seq[Long]](0)
+    assert(line.size === 5)
+    assert(line.contains(start))
+    assert(line.contains(end))
   }
 
   it should "return null for indices around pentagon" in {
@@ -60,7 +66,7 @@ class DistanceSpec extends H3Spec {
 
   it should "fail for invalid parameters when ansi enabled" in {
     withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
-      assertThrows[DistanceUndefinedException] {
+      assertThrows[H3Exception] {
         val start = 612630286896726015L
         val end = 612630286919794687L
         sparkSession.sql(s"SELECT $functionName(${start}l, ${end}l)").collect()
@@ -68,5 +74,5 @@ class DistanceSpec extends H3Spec {
     }
   }
 
-  protected override def functionName: String = "h3_distance"
+  protected override def functionName: String = "h3_grid_path"
 }

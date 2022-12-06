@@ -13,7 +13,7 @@ import scala.collection.JavaConverters._
 class IsPentagonSpec extends H3Spec {
   it should "return true for pentagon h3 index" in {
     val resolution = 7
-    val index = h3.getPentagonIndexes(resolution).asScala.head
+    val index = h3.getPentagons(resolution).asScala.head
     val df = sparkSession.sql(s"SELECT $functionName(${index}l)")
     val isPentagon = df.first().getAs[Boolean](0)
     assert(isPentagon)
@@ -34,7 +34,7 @@ class IsPentagonSpec extends H3Spec {
   it should "support compiled function" in {
     import sparkSession.implicits._
     val resolution = 7
-    val index = h3.getPentagonIndexes(resolution).asScala.head
+    val index = h3.getPentagons(resolution).asScala.head
     val df = Seq((index, 1)).toDF("h3", "id")
     val result = df.select(h3_is_pentagon(col("h3")))
     val isPentagon = result.first().getAs[Boolean](0)

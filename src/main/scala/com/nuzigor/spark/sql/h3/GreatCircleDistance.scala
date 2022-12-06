@@ -14,7 +14,7 @@ import org.apache.spark.sql.types.{DataType, DoubleType, LongType}
 /**
  * Gives the "great circle" or "haversine" distance between centers of h3 indices in units.
  */
-abstract class PointDistance
+abstract class GreatCircleDistance
   extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
   def unit: LengthUnit
@@ -26,8 +26,8 @@ abstract class PointDistance
     val start = originAny.asInstanceOf[Long]
     val end = endAny.asInstanceOf[Long]
     val h3Instance = H3.getInstance()
-    val startGeo = h3Instance.h3ToGeo(start)
-    val endGeo = h3Instance.h3ToGeo(end)
-    h3Instance.pointDist(startGeo, endGeo, unit)
+    val startGeo = h3Instance.cellToLatLng(start)
+    val endGeo = h3Instance.cellToLatLng(end)
+    h3Instance.greatCircleDistance(startGeo, endGeo, unit)
   }
 }
