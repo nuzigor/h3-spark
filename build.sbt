@@ -40,6 +40,11 @@ ThisBuild / publishTo := {
 ThisBuild / publishMavenStyle := true
 
 ThisBuild / scalaVersion := "2.12.17"
+ThisBuild / semanticdbEnabled := true
+ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
+ThisBuild / scalacOptions += "-Ywarn-unused-import"
+ThisBuild / scalacOptions += "-Ywarn-adapted-args"
+ThisBuild / scalacOptions += "-deprecation"
 
 lazy val root = (project in file("."))
   .settings(

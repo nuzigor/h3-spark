@@ -56,11 +56,9 @@ case class FromWkt(left: Expression, right: Expression,
       if (geometry.isEmpty) {
         null
       } else {
-        val coordinate = geometry.getCoordinate
-        if (coordinate == null) {
-          null
-        } else {
-          H3.getInstance().latLngToCell(coordinate.y, coordinate.x, resolution)
+        Option(geometry.getCoordinate) match {
+          case Some(value) => H3.getInstance().latLngToCell(value.y, value.x, resolution)
+          case None => null
         }
       }
     } catch {
