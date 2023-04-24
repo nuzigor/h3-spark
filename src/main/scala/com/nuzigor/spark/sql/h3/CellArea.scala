@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 Igor Nuzhnov
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -14,8 +15,7 @@ import org.apache.spark.sql.types.{DataType, DoubleType, LongType}
 /**
  * Exact area of specific cell in area units.
  */
-abstract class CellArea
-  extends UnaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+abstract class CellArea extends UnaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
   def unit: AreaUnit
 

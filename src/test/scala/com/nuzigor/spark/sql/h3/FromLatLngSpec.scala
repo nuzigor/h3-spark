@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 Igor Nuzhnov
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -13,7 +14,7 @@ class FromLatLngSpec extends H3Spec {
   it should "convert point to h3" in {
     val df = sparkSession.sql(s"SELECT $functionName(35.8466667d, -0.2983396d, 10)")
     val h3 = df.first().getAs[Long](0)
-    assert(h3 === 0x8A382ED85C37FFFL)
+    assert(h3 === 0x8a382ed85c37fffL)
   }
 
   it should "return null for null lat" in {
@@ -37,7 +38,7 @@ class FromLatLngSpec extends H3Spec {
     val resolution = 10
     val result = df.select(h3_from_latlng(column("lat"), column("lng"), resolution).alias("h3"))
     val h3 = result.first().getAs[Long](0)
-    assert(h3 === 0x8A382ED85C37FFFL)
+    assert(h3 === 0x8a382ed85c37fffL)
   }
 
   it should "return null for invalid resolution" in {

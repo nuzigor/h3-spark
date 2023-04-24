@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 Igor Nuzhnov
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -30,10 +31,7 @@ abstract class H3Spec extends AnyFlatSpec {
 
   protected val warehouseLocation: String = System.getProperty("user.dir") + "/target/"
   protected val resourceFolder: String = System.getProperty("user.dir") + "/../core/src/test/resources/"
-
-  // scalastyle:off magic.number
   protected val invalidResolutions: Seq[Int] = Seq(-1, 16)
-  // scalastyle:on magic.number
 
   protected lazy val sparkSession: SparkSession = SparkSession
     .builder()
@@ -58,10 +56,11 @@ abstract class H3Spec extends AnyFlatSpec {
     (keys, values).zipped.foreach { (k, v) =>
       conf.setConfString(k, v)
     }
-    try f finally {
+    try f
+    finally {
       keys.zip(currentValues).foreach {
         case (key, Some(value)) => conf.setConfString(key, value)
-        case (key, None) => conf.unsetConf(key)
+        case (key, None)        => conf.unsetConf(key)
       }
     }
   }

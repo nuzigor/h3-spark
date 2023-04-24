@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 Igor Nuzhnov
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -62,10 +63,7 @@ class AreNeighborsSpec extends H3Spec {
   it should "fail for invalid parameters when ansi enabled" in {
     val h3 = 622485130170302463L
     withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
-      Seq(
-        s"SELECT $functionName(${h3}l, -1)",
-        s"SELECT $functionName(-1, ${h3}l)"
-      ).foreach { script =>
+      Seq(s"SELECT $functionName(${h3}l, -1)", s"SELECT $functionName(-1, ${h3}l)").foreach { script =>
         assertThrows[H3Exception] {
           sparkSession.sql(script).collect()
         }

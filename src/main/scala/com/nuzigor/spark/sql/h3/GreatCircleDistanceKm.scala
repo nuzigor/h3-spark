@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 Igor Nuzhnov
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -28,9 +29,11 @@ import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescript
          > SELECT _FUNC_(622485130170302463l, 622485130170957823l);
           0.475
      """,
-  since = "0.7.0")
+  since = "0.7.0"
+)
 case class GreatCircleDistanceKm(left: Expression, right: Expression) extends GreatCircleDistance {
   override def unit: LengthUnit = LengthUnit.km
 
-  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): GreatCircleDistanceKm = copy(left = newLeft, right = newRight)
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): GreatCircleDistanceKm =
+    copy(left = newLeft, right = newRight)
 }

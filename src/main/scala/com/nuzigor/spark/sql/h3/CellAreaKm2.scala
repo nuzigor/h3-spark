@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 Igor Nuzhnov
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -25,7 +26,8 @@ import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescript
          > SELECT _FUNC_(622485130170957823l);
           0.0148
      """,
-  since = "0.7.0")
+  since = "0.7.0"
+)
 case class CellAreaKm2(child: Expression) extends CellArea {
   override def unit: AreaUnit = AreaUnit.km2
 

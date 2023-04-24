@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 Igor Nuzhnov
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -35,10 +36,13 @@ import org.locationtech.jts.io.{ParseException, WKTReader}
          > SELECT _FUNC_('POINT EMPTY', 9);
           NULL
      """,
-  since = "0.1.0")
-case class FromWkt(left: Expression, right: Expression,
-                   failOnError: Boolean = SQLConf.get.ansiEnabled)
-  extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+  since = "0.1.0"
+)
+case class FromWkt(left: Expression, right: Expression, failOnError: Boolean = SQLConf.get.ansiEnabled)
+    extends BinaryExpression
+    with CodegenFallback
+    with ImplicitCastInputTypes
+    with NullIntolerant {
 
   def this(left: Expression, right: Expression) =
     this(left, right, SQLConf.get.ansiEnabled)
@@ -56,11 +60,9 @@ case class FromWkt(left: Expression, right: Expression,
       if (geometry.isEmpty) {
         null
       } else {
-        val coordinate = geometry.getCoordinate
-        if (coordinate == null) {
-          null
-        } else {
-          H3.getInstance().latLngToCell(coordinate.y, coordinate.x, resolution)
+        Option(geometry.getCoordinate) match {
+          case Some(value) => H3.getInstance().latLngToCell(value.y, value.x, resolution)
+          case None        => null
         }
       }
     } catch {
@@ -68,5 +70,6 @@ case class FromWkt(left: Expression, right: Expression,
     }
   }
 
-  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): FromWkt = copy(left = newLeft, right = newRight)
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): FromWkt =
+    copy(left = newLeft, right = newRight)
 }

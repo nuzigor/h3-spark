@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 Igor Nuzhnov
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -27,9 +28,9 @@ import org.apache.spark.sql.types.{DataType, IntegerType, LongType}
          > SELECT _FUNC_(622485130170302463l);
           10
      """,
-  since = "0.1.0")
-case class GetResolution(child: Expression)
-  extends UnaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+  since = "0.1.0"
+)
+case class GetResolution(child: Expression) extends UnaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
   override def inputTypes: Seq[DataType] = Seq(LongType)
   override def dataType: DataType = IntegerType

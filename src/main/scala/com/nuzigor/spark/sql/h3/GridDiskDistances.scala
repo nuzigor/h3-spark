@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 Igor Nuzhnov
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -34,9 +35,13 @@ import scala.collection.JavaConverters._
           [[622485130170302463],[622485130171842559,622485130171711487,622485130170171391,622485130170105855,622485130170236927,622485130171252735]]
      """,
   group = "array_funcs",
-  since = "0.9.0")
+  since = "0.9.0"
+)
 case class GridDiskDistances(left: Expression, right: Expression)
-  extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+    extends BinaryExpression
+    with CodegenFallback
+    with ImplicitCastInputTypes
+    with NullIntolerant {
 
   override def inputTypes: Seq[DataType] = Seq(LongType, IntegerType)
   override def dataType: DataType = ArrayType(ArrayType(LongType, containsNull = false), containsNull = false)
@@ -48,5 +53,6 @@ case class GridDiskDistances(left: Expression, right: Expression)
     ArrayData.toArrayData(distances.asScala.map(i => ArrayData.toArrayData(i.asScala.toArray)))
   }
 
-  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): GridDiskDistances = copy(left = newLeft, right = newRight)
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): GridDiskDistances =
+    copy(left = newLeft, right = newRight)
 }

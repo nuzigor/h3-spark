@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 Igor Nuzhnov
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -57,10 +58,13 @@ import scala.collection.JavaConverters._
           NULL
      """,
   group = "array_funcs",
-  since = "0.1.0")
-case class ArrayFromWkt(left: Expression, right: Expression,
-                        failOnError: Boolean = SQLConf.get.ansiEnabled)
-  extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+  since = "0.1.0"
+)
+case class ArrayFromWkt(left: Expression, right: Expression, failOnError: Boolean = SQLConf.get.ansiEnabled)
+    extends BinaryExpression
+    with CodegenFallback
+    with ImplicitCastInputTypes
+    with NullIntolerant {
 
   def this(left: Expression, right: Expression) =
     this(left, right, SQLConf.get.ansiEnabled)
@@ -89,14 +93,14 @@ case class ArrayFromWkt(left: Expression, right: Expression,
 
   private def getGeometryIndices(h3Instance: H3Core, geometry: Geometry, resolution: Int) = {
     geometry match {
-      case geometry if geometry.isEmpty => Array.empty[Long]
-      case polygon: Polygon => getPolygonIndices(h3Instance, polygon, resolution).distinct
-      case point: Point => Array(h3Instance.latLngToCell(point.getY, point.getX, resolution))
-      case multiPoint: MultiPoint => gemMultiPointIndices(h3Instance, multiPoint, resolution)
-      case multiPolygon: MultiPolygon => getMultiPolygonIndices(h3Instance, multiPolygon, resolution)
-      case lineString: LineString => getLineStringIndices(h3Instance, lineString, resolution).distinct.toArray
+      case geometry if geometry.isEmpty     => Array.empty[Long]
+      case polygon: Polygon                 => getPolygonIndices(h3Instance, polygon, resolution).distinct
+      case point: Point                     => Array(h3Instance.latLngToCell(point.getY, point.getX, resolution))
+      case multiPoint: MultiPoint           => gemMultiPointIndices(h3Instance, multiPoint, resolution)
+      case multiPolygon: MultiPolygon       => getMultiPolygonIndices(h3Instance, multiPolygon, resolution)
+      case lineString: LineString           => getLineStringIndices(h3Instance, lineString, resolution).distinct.toArray
       case multiLineString: MultiLineString => getMultiLineStringIndices(h3Instance, multiLineString, resolution)
-      case _ => Array.empty[Long]
+      case _                                => Array.empty[Long]
     }
   }
 
@@ -144,5 +148,6 @@ case class ArrayFromWkt(left: Expression, right: Expression,
       })
   }
 
-  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): ArrayFromWkt = copy(left = newLeft, right = newRight)
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): ArrayFromWkt =
+    copy(left = newLeft, right = newRight)
 }

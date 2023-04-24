@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 Igor Nuzhnov
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -14,8 +15,7 @@ import org.apache.spark.sql.types.{DataType, DoubleType, LongType}
 /**
  * Gives the "great circle" or "haversine" distance between centers of h3 indices in units.
  */
-abstract class GreatCircleDistance
-  extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+abstract class GreatCircleDistance extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
   def unit: LengthUnit
 

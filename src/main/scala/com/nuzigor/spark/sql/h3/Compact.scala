@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 Igor Nuzhnov
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -35,10 +36,14 @@ import scala.collection.JavaConverters._
           []
      """,
   group = "array_funcs",
-  since = "0.1.0")
-case class Compact(child: Expression,
-                   failOnError: Boolean = SQLConf.get.ansiEnabled)
-  extends UnaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant with ArrayListConversion {
+  since = "0.1.0"
+)
+case class Compact(child: Expression, failOnError: Boolean = SQLConf.get.ansiEnabled)
+    extends UnaryExpression
+    with CodegenFallback
+    with ImplicitCastInputTypes
+    with NullIntolerant
+    with ArrayListConversion {
 
   def this(child: Expression) = this(child, SQLConf.get.ansiEnabled)
 

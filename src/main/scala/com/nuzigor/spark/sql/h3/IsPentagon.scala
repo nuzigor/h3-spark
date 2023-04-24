@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 Igor Nuzhnov
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -27,9 +28,9 @@ import org.apache.spark.sql.types.{BooleanType, DataType, LongType}
          > SELECT _FUNC_(622485130170302463l);
           false
      """,
-  since = "0.7.0")
-case class IsPentagon(child: Expression)
-  extends UnaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+  since = "0.7.0"
+)
+case class IsPentagon(child: Expression) extends UnaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
   override def inputTypes: Seq[DataType] = Seq(LongType)
   override def dataType: DataType = BooleanType

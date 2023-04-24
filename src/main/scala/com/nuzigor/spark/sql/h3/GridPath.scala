@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 Igor Nuzhnov
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -36,10 +37,13 @@ import scala.collection.JavaConverters._
           [622485130170302463,622485130170171391,622485130170204159,622485130171088895,622485130170957823]
      """,
   group = "array_funcs",
-  since = "0.9.0")
-case class GridPath(left: Expression, right: Expression,
-                    failOnError: Boolean = SQLConf.get.ansiEnabled)
-  extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+  since = "0.9.0"
+)
+case class GridPath(left: Expression, right: Expression, failOnError: Boolean = SQLConf.get.ansiEnabled)
+    extends BinaryExpression
+    with CodegenFallback
+    with ImplicitCastInputTypes
+    with NullIntolerant {
 
   def this(left: Expression, right: Expression) =
     this(left, right, SQLConf.get.ansiEnabled)
@@ -53,11 +57,11 @@ case class GridPath(left: Expression, right: Expression,
     val end = endAny.asInstanceOf[Long]
     try {
       ArrayData.toArrayData(H3.getInstance().gridPathCells(start, end).asScala.toArray)
-    }
-    catch {
+    } catch {
       case _: H3Exception if !failOnError => null
     }
   }
 
-  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): GridPath = copy(left = newLeft, right = newRight)
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): GridPath =
+    copy(left = newLeft, right = newRight)
 }

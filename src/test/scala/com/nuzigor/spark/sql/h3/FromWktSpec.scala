@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 Igor Nuzhnov
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -13,7 +14,7 @@ class FromWktSpec extends H3Spec {
   it should "convert WKT point to h3" in {
     val df = sparkSession.sql(s"SELECT $functionName('POINT (-0.2983396 35.8466667)', 10)")
     val h3 = df.first().getAs[Long](0)
-    assert(h3 === 0x8A382ED85C37FFFL)
+    assert(h3 === 0x8a382ed85c37fffL)
   }
 
   it should "return null for empty WKT point" in {
@@ -42,7 +43,7 @@ class FromWktSpec extends H3Spec {
     val resolution = 10
     val result = df.select(h3_from_wkt(column("wkt"), resolution).alias("h3"))
     val h3 = result.first().getAs[Long](0)
-    assert(h3 === 0x8A382ED85C37FFFL)
+    assert(h3 === 0x8a382ed85c37fffL)
   }
 
   it should "return null for invalid resolution" in {
@@ -54,14 +55,12 @@ class FromWktSpec extends H3Spec {
 
   it should "fail for invalid parameters when ansi enabled" in {
     withSQLConf(SQLConf.ANSI_ENABLED.key -> "true") {
-      Seq(
-        s"SELECT $functionName('POINT (-0.2983396 35.8466667)', -1)",
-        s"SELECT $functionName('bla bla', 10)"
-      ).foreach { script =>
-        assertThrows[Throwable] {
-          sparkSession.sql(script).collect()
+      Seq(s"SELECT $functionName('POINT (-0.2983396 35.8466667)', -1)", s"SELECT $functionName('bla bla', 10)")
+        .foreach { script =>
+          assertThrows[Throwable] {
+            sparkSession.sql(script).collect()
+          }
         }
-      }
     }
   }
 

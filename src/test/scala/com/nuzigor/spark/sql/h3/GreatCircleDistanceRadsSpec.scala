@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 Igor Nuzhnov
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -15,7 +16,7 @@ class GreatCircleDistanceRadsSpec extends H3Spec {
     val end = 622485130170302463L
     val df = sparkSession.sql(s"SELECT $functionName(${start}l, ${end}l)")
     val distance = df.first().getAs[Double](0)
-    assert(distance === 7.471E-5 +- 0.001E-5)
+    assert(distance === 7.471e-5 +- 0.001e-5)
   }
 
   it should "return null for null start" in {
@@ -35,7 +36,7 @@ class GreatCircleDistanceRadsSpec extends H3Spec {
     val df = Seq((622485130170957823L, 622485130170302463L)).toDF("start", "end")
     val result = df.select(h3_distance_rads(col("start"), col("end")))
     val distance = result.first().getAs[Double](0)
-    assert(distance === 7.471E-5 +- 0.001E-5)
+    assert(distance === 7.471e-5 +- 0.001e-5)
   }
 
   protected override def functionName: String = "h3_distance_rads"

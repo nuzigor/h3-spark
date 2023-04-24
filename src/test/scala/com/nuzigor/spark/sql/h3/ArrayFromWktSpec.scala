@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 Igor Nuzhnov
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -32,7 +33,8 @@ class ArrayFromWktSpec extends H3Spec {
   }
 
   it should "return element for each point of multi point WKT" in {
-    val df = sparkSession.sql(s"SELECT $functionName('MULTIPOINT ((-0.2983396 35.8466667), (35.8466667 -0.2983396))', 7)")
+    val df =
+      sparkSession.sql(s"SELECT $functionName('MULTIPOINT ((-0.2983396 35.8466667), (35.8466667 -0.2983396))', 7)")
     val h3 = df.first().getAs[Seq[Long]](0)
     assert(h3.size === 2)
   }
@@ -51,7 +53,8 @@ class ArrayFromWktSpec extends H3Spec {
   }
 
   it should "return h3 indices for all line segments of multi line string WKT" in {
-    val multiLineString = "MULTILINESTRING ((-0.29 35.75, -0.30 35.83, -0.31 35.96), (-1.29 38.75, -1.30 38.83, -1.31 38.96))"
+    val multiLineString =
+      "MULTILINESTRING ((-0.29 35.75, -0.30 35.83, -0.31 35.96), (-1.29 38.75, -1.30 38.83, -1.31 38.96))"
     val df = sparkSession.sql(s"SELECT $functionName('$multiLineString', 7)")
     val h3 = df.first().getAs[Seq[Long]](0)
     assert(h3.size === 24)
@@ -59,7 +62,8 @@ class ArrayFromWktSpec extends H3Spec {
   }
 
   it should "merge h3 indices for close line segments of multi line string WKT" in {
-    val multiLineString = "MULTILINESTRING ((-0.29 35.75, -0.30 35.83, -0.31 35.96), (-0.27 35.78, -0.30 35.83, -0.31 35.95))"
+    val multiLineString =
+      "MULTILINESTRING ((-0.29 35.75, -0.30 35.83, -0.31 35.96), (-0.27 35.78, -0.30 35.83, -0.31 35.95))"
     val df = sparkSession.sql(s"SELECT $functionName('$multiLineString', 7)")
     val h3 = df.first().getAs[Seq[Long]](0)
     assert(h3.size === 14)
@@ -114,7 +118,7 @@ class ArrayFromWktSpec extends H3Spec {
       Seq(
         s"SELECT $functionName('bla bla', 10)",
         s"SELECT $functionName('POLYGON ((3 -1, 3 -1.1, 3.1 1.1, 3 -1))', -1)",
-        s"SELECT $functionName('POLYGON ((3 -1, 3 -1.1, 3.1 1.1, 3 -1))', 16)",
+        s"SELECT $functionName('POLYGON ((3 -1, 3 -1.1, 3.1 1.1, 3 -1))', 16)"
       ).foreach { script =>
         assertThrows[Throwable] {
           sparkSession.sql(script).collect()

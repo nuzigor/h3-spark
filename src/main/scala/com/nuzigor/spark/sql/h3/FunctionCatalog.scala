@@ -1,5 +1,6 @@
 /*
  * Copyright 2021 Igor Nuzhnov
+ *
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -38,26 +39,27 @@ object FunctionCatalog {
     createFunctionDescription[GridDiskDistances]("h3_grid_disk_distances")
   )
 
-  private def createFunctionDescription[T <: Expression](name: String)
-                                                        (implicit tag: ClassTag[T]): (FunctionIdentifier, ExpressionInfo, FunctionBuilder) = {
+  private def createFunctionDescription[T <: Expression](name: String)(implicit tag: ClassTag[T]): (FunctionIdentifier, ExpressionInfo, FunctionBuilder) = {
     val constructors = tag.runtimeClass.getConstructors
     val builder = (expressions: Seq[Expression]) => {
       val params = Seq.fill(expressions.size)(classOf[Expression])
-      val f = constructors.find(_.getParameterTypes.toSeq == params).getOrElse {
+      val f = constructors.find(_.getParameterTypes.toSeq equals params).getOrElse {
         val validParametersCount = constructors
-          .filter(_.getParameterTypes.forall(_ == classOf[Expression]))
-          .map(_.getParameterCount).distinct.sorted
-        val invalidArgumentsMsg = if (validParametersCount.length == 0) {
-          s"Invalid arguments for function $name"
-        } else {
-          val expectedNumberOfParameters = if (validParametersCount.length == 1) {
-            validParametersCount.head.toString
-          } else {
-            validParametersCount.init.mkString("one of ", ", ", " and ") +
-              validParametersCount.last
-          }
-          s"Invalid number of arguments for function $name. " +
-            s"Expected: $expectedNumberOfParameters; Found: ${params.length}"
+          .filter(_.getParameterTypes.forall(_ equals classOf[Expression]))
+          .map(_.getParameterCount)
+          .distinct
+          .sorted
+        val invalidArgumentsMsg = validParametersCount.length match {
+          case 0 => s"Invalid arguments for function $name"
+          case _ =>
+            val expectedNumberOfParameters = validParametersCount.length match {
+              case 1 => validParametersCount.head.toString
+              case _ =>
+                validParametersCount.init.mkString("one of ", ", ", " and ") +
+                  validParametersCount.last
+            }
+            s"Invalid number of arguments for function $name. " +
+              s"Expected: $expectedNumberOfParameters; Found: ${params.length}"
         }
         throw new Exception(invalidArgumentsMsg)
       }
@@ -73,24 +75,24 @@ object FunctionCatalog {
     (FunctionIdentifier(name), expressionInfo, builder)
   }
 
-  def createExpressionInfo[T <: Expression : ClassTag](name: String): ExpressionInfo = {
+  private def createExpressionInfo[T <: Expression: ClassTag](name: String): ExpressionInfo = {
     val clazz = scala.reflect.classTag[T].runtimeClass
-    val ed = clazz.getAnnotation(classOf[ExpressionDescription])
-    if (ed != null) {
-      new ExpressionInfo(
-        clazz.getCanonicalName,
-        null,
-        name,
-        ed.usage(),
-        ed.arguments(),
-        ed.examples(),
-        ed.note(),
-        ed.group(),
-        ed.since(),
-        ed.deprecated(),
-        ed.source())
-    } else {
-      new ExpressionInfo(clazz.getCanonicalName, name)
+    Option(clazz.getAnnotation(classOf[ExpressionDescription])) match {
+      case Some(ed) =>
+        new ExpressionInfo(
+          clazz.getCanonicalName,
+          null,
+          name,
+          ed.usage(),
+          ed.arguments(),
+          ed.examples(),
+          ed.note(),
+          ed.group(),
+          ed.since(),
+          ed.deprecated(),
+          ed.source()
+        )
+      case None => new ExpressionInfo(clazz.getCanonicalName, name)
     }
   }
 }
