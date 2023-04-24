@@ -10,8 +10,10 @@ ThisBuild / homepage := Some(url("https://github.com/nuzigor/h3-spark"))
 ThisBuild / licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
 ThisBuild / versionScheme := Some("semver-spec")
 ThisBuild / version := "0.9.0"
-
+ThisBuild / startYear := Some(2021)
 ThisBuild / developers := List(Developer("nuzigor", "Igor Nuzhnov", "nuzhnov@gmail.com", url("https://github.com/nuzigor")))
+
+headerLicense := Some(HeaderLicense.ALv2("2021", "Igor Nuzhnov", HeaderLicenseStyle.SpdxSyntax))
 
 ThisBuild / scmInfo := Some(ScmInfo(url("https://github.com/nuzigor/h3-spark"), "scm:git@github.com:nuzigor/h3-spark.git"))
 
