@@ -4,6 +4,7 @@ Brings [H3 - Hexagonal hierarchical geospatial indexing system](https://h3geo.or
 
 ![Scala CI](https://github.com/nuzigor/h3-spark/actions/workflows/scala.yml/badge.svg)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.nuzigor/h3-spark_2.12?label=Maven%20Central&color=%236DBE42)](https://central.sonatype.com/search?q=g%253Aio.github.nuzigor%2520a%253Ah3-spark_2.12)
 
 Installation
 ------------
