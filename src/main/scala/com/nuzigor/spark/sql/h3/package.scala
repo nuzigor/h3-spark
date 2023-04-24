@@ -7,9 +7,7 @@ package com.nuzigor.spark.sql
 
 import org.apache.spark.sql.{SQLContext, SparkSession}
 
-// scalastyle:off
 package object h3 {
-// scalastyle:on
   def registerAll(sqlContext: SQLContext): Unit = {
     registerAll(sqlContext.sparkSession)
   }

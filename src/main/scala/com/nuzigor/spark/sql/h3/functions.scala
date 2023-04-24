@@ -8,12 +8,9 @@ package com.nuzigor.spark.sql.h3
 import org.apache.spark.sql.Column
 import org.apache.spark.sql.catalyst.expressions.{Expression, Literal}
 
-// scalastyle:off
 object functions {
-// scalastyle:on
   private def withExpr(expr: Expression): Column = new Column(expr)
 
-  // scalastyle:off method.name
   /**
    * Computes h3 address from latitude and longitude at target resolution.
    * @param latitude latitude in degrees
@@ -237,5 +234,4 @@ object functions {
   def h3_uncompact(h3: Column, resolution: Int): Column = withExpr {
     Uncompact(h3.expr, Literal(resolution))
   }
-  // scalastyle:on method.name
 }

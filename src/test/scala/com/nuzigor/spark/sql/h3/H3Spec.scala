@@ -30,10 +30,7 @@ abstract class H3Spec extends AnyFlatSpec {
 
   protected val warehouseLocation: String = System.getProperty("user.dir") + "/target/"
   protected val resourceFolder: String = System.getProperty("user.dir") + "/../core/src/test/resources/"
-
-  // scalastyle:off magic.number
   protected val invalidResolutions: Seq[Int] = Seq(-1, 16)
-  // scalastyle:on magic.number
 
   protected lazy val sparkSession: SparkSession = SparkSession
     .builder()
