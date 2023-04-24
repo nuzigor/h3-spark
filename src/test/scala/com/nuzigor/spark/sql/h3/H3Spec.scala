@@ -58,10 +58,11 @@ abstract class H3Spec extends AnyFlatSpec {
     (keys, values).zipped.foreach { (k, v) =>
       conf.setConfString(k, v)
     }
-    try f finally {
+    try f
+    finally {
       keys.zip(currentValues).foreach {
         case (key, Some(value)) => conf.setConfString(key, value)
-        case (key, None) => conf.unsetConf(key)
+        case (key, None)        => conf.unsetConf(key)
       }
     }
   }

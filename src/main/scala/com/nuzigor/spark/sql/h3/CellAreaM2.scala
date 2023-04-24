@@ -25,7 +25,8 @@ import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescript
          > SELECT _FUNC_(622485130170957823l);
           14812.0
      """,
-  since = "0.7.0")
+  since = "0.7.0"
+)
 case class CellAreaM2(child: Expression) extends CellArea {
   override def unit: AreaUnit = AreaUnit.m2
 

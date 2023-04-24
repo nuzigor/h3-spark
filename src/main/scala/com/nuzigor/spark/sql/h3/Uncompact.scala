@@ -35,10 +35,14 @@ import scala.collection.JavaConverters._
           []
      """,
   group = "array_funcs",
-  since = "0.1.0")
-case class Uncompact(left: Expression, right: Expression,
-                     failOnError: Boolean = SQLConf.get.ansiEnabled)
-  extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant with ArrayListConversion {
+  since = "0.1.0"
+)
+case class Uncompact(left: Expression, right: Expression, failOnError: Boolean = SQLConf.get.ansiEnabled)
+    extends BinaryExpression
+    with CodegenFallback
+    with ImplicitCastInputTypes
+    with NullIntolerant
+    with ArrayListConversion {
 
   def this(left: Expression, right: Expression) =
     this(left, right, SQLConf.get.ansiEnabled)
@@ -64,5 +68,6 @@ case class Uncompact(left: Expression, right: Expression,
     }
   }
 
-  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): Uncompact = copy(left = newLeft, right = newRight)
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): Uncompact =
+    copy(left = newLeft, right = newRight)
 }

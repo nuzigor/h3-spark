@@ -14,7 +14,7 @@ class CellAreaRads2Spec extends H3Spec {
     val index = 622485130170957823L
     val df = sparkSession.sql(s"SELECT $functionName(${index}l)")
     val area = df.first().getAs[Double](0)
-    assert(area === 3.65E-10 +- 0.01E-10)
+    assert(area === 3.65e-10 +- 0.01e-10)
   }
 
   it should "return null for null index" in {
@@ -27,7 +27,7 @@ class CellAreaRads2Spec extends H3Spec {
     val df = Seq((622485130170957823L, 1)).toDF("h3", "id")
     val result = df.select(h3_cell_area_rads2(col("h3")))
     val area = result.first().getAs[Double](0)
-    assert(area === 3.65E-10 +- 0.01E-10)
+    assert(area === 3.65e-10 +- 0.01e-10)
   }
 
   protected override def functionName: String = "h3_cell_area_rads2"

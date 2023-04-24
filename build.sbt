@@ -42,9 +42,11 @@ ThisBuild / publishMavenStyle := true
 ThisBuild / scalaVersion := "2.12.17"
 ThisBuild / semanticdbEnabled := true
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
-ThisBuild / scalacOptions += "-Ywarn-unused-import"
-ThisBuild / scalacOptions += "-Ywarn-adapted-args"
-ThisBuild / scalacOptions += "-deprecation"
+ThisBuild / scalacOptions ++= List(
+  "-Ywarn-unused-import",
+  "-Ywarn-adapted-args",
+  "-deprecation"
+)
 
 lazy val root = (project in file("."))
   .settings(
@@ -55,7 +57,6 @@ val sparkVersion = "3.3.1"
 val h3Version = "4.0.2"
 val jtsVersion = "1.19.0"
 val scalatestVersion = "3.2.14"
-val scalacheckVersion = "1.15.4"
 
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % sparkVersion % "provided",

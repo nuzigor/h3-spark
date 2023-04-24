@@ -36,10 +36,13 @@ import scala.collection.JavaConverters._
           [622485130171252735,622485130171842559,622485130171711487,622485130170171391,622485130170105855,622485130170236927]
      """,
   group = "array_funcs",
-  since = "0.9.0")
-case class GridRing(left: Expression, right: Expression,
-                    failOnError: Boolean = SQLConf.get.ansiEnabled)
-  extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+  since = "0.9.0"
+)
+case class GridRing(left: Expression, right: Expression, failOnError: Boolean = SQLConf.get.ansiEnabled)
+    extends BinaryExpression
+    with CodegenFallback
+    with ImplicitCastInputTypes
+    with NullIntolerant {
 
   def this(left: Expression, right: Expression) =
     this(left, right, SQLConf.get.ansiEnabled)
@@ -58,5 +61,6 @@ case class GridRing(left: Expression, right: Expression,
     }
   }
 
-  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): GridRing = copy(left = newLeft, right = newRight)
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): GridRing =
+    copy(left = newLeft, right = newRight)
 }

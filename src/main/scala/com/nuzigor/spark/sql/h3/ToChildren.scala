@@ -36,10 +36,13 @@ import scala.collection.JavaConverters._
           [626988729797644287,626988729797648383,626988729797652479,626988729797656575,626988729797660671,626988729797664767,626988729797668863]
      """,
   group = "array_funcs",
-  since = "0.1.0")
-case class ToChildren(left: Expression, right: Expression,
-                      failOnError: Boolean = SQLConf.get.ansiEnabled)
-  extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+  since = "0.1.0"
+)
+case class ToChildren(left: Expression, right: Expression, failOnError: Boolean = SQLConf.get.ansiEnabled)
+    extends BinaryExpression
+    with CodegenFallback
+    with ImplicitCastInputTypes
+    with NullIntolerant {
 
   def this(left: Expression, right: Expression) =
     this(left, right, SQLConf.get.ansiEnabled)
@@ -58,11 +61,11 @@ case class ToChildren(left: Expression, right: Expression,
       } else {
         ArrayData.toArrayData(children)
       }
-    }
-    catch {
+    } catch {
       case _: H3Exception | _: IllegalArgumentException if !failOnError => null
     }
   }
 
-  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): ToChildren = copy(left = newLeft, right = newRight)
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): ToChildren =
+    copy(left = newLeft, right = newRight)
 }

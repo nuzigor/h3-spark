@@ -28,9 +28,11 @@ import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescript
          > SELECT _FUNC_(622485130170302463l, 622485130170957823l);
           7.471E-5
      """,
-  since = "0.7.0")
+  since = "0.7.0"
+)
 case class GreatCircleDistanceRads(left: Expression, right: Expression) extends GreatCircleDistance {
   override def unit: LengthUnit = LengthUnit.rads
 
-  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): GreatCircleDistanceRads = copy(left = newLeft, right = newRight)
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): GreatCircleDistanceRads =
+    copy(left = newLeft, right = newRight)
 }

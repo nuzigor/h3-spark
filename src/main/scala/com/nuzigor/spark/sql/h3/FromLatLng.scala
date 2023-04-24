@@ -34,10 +34,13 @@ import org.apache.spark.sql.types.{DataType, DoubleType, IntegerType, LongType}
          > SELECT _FUNC_(81.34534d, -164.64459d, 9);
           617057114733412351
      """,
-  since = "0.9.0")
-case class FromLatLng(first: Expression, second: Expression, third: Expression,
-                      failOnError: Boolean = SQLConf.get.ansiEnabled)
-  extends TernaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+  since = "0.9.0"
+)
+case class FromLatLng(first: Expression, second: Expression, third: Expression, failOnError: Boolean = SQLConf.get.ansiEnabled)
+    extends TernaryExpression
+    with CodegenFallback
+    with ImplicitCastInputTypes
+    with NullIntolerant {
 
   def this(first: Expression, second: Expression, third: Expression) =
     this(first, second, third, SQLConf.get.ansiEnabled)

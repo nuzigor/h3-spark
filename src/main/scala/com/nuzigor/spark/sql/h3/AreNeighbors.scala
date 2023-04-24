@@ -32,10 +32,13 @@ import org.apache.spark.sql.types.{BooleanType, DataType, LongType}
          > SELECT _FUNC_(622485130170302463l, 622485130170957823l);
           false
      """,
-  since = "0.7.0")
-case class AreNeighbors(left: Expression, right: Expression,
-                        failOnError: Boolean = SQLConf.get.ansiEnabled)
-  extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+  since = "0.7.0"
+)
+case class AreNeighbors(left: Expression, right: Expression, failOnError: Boolean = SQLConf.get.ansiEnabled)
+    extends BinaryExpression
+    with CodegenFallback
+    with ImplicitCastInputTypes
+    with NullIntolerant {
 
   def this(left: Expression, right: Expression) =
     this(left, right, SQLConf.get.ansiEnabled)
@@ -49,11 +52,11 @@ case class AreNeighbors(left: Expression, right: Expression,
     val destination = endAny.asInstanceOf[Long]
     try {
       H3.getInstance().areNeighborCells(origin, destination)
-    }
-    catch {
+    } catch {
       case _: H3Exception if !failOnError => null
     }
   }
 
-  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): AreNeighbors = copy(left = newLeft, right = newRight)
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): AreNeighbors =
+    copy(left = newLeft, right = newRight)
 }

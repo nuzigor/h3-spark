@@ -16,15 +16,15 @@ package object h3 {
 
   def registerAll(sparkSession: SparkSession): Unit = {
     val functionRegistry = sparkSession.sessionState.functionRegistry
-    FunctionCatalog.functions.foreach {
-      case (functionId, info, builder) => functionRegistry.registerFunction(functionId, info, builder)
+    FunctionCatalog.functions.foreach { case (functionId, info, builder) =>
+      functionRegistry.registerFunction(functionId, info, builder)
     }
   }
 
   def dropAll(sparkSession: SparkSession): Unit = {
     val functionRegistry = sparkSession.sessionState.functionRegistry
-    FunctionCatalog.functions.foreach {
-      case (functionId, _, _) => functionRegistry.dropFunction(functionId)
+    FunctionCatalog.functions.foreach { case (functionId, _, _) =>
+      functionRegistry.dropFunction(functionId)
     }
   }
 }

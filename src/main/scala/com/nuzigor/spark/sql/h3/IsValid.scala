@@ -29,9 +29,9 @@ import org.apache.spark.sql.types.{BooleanType, DataType, LongType}
          > SELECT _FUNC_(0);
           false
      """,
-  since = "0.1.0")
-case class IsValid(child: Expression)
-  extends UnaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+  since = "0.1.0"
+)
+case class IsValid(child: Expression) extends UnaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
 
   override def inputTypes: Seq[DataType] = Seq(LongType)
   override def dataType: DataType = BooleanType

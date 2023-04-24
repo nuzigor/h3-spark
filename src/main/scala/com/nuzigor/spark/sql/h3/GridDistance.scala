@@ -32,9 +32,13 @@ import org.apache.spark.sql.types.{DataType, LongType}
          > SELECT _FUNC_(622485130170302463l, 622485130170957823l);
           4
      """,
-  since = "0.9.0")
+  since = "0.9.0"
+)
 case class GridDistance(left: Expression, right: Expression, failOnError: Boolean = SQLConf.get.ansiEnabled)
-  extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+    extends BinaryExpression
+    with CodegenFallback
+    with ImplicitCastInputTypes
+    with NullIntolerant {
 
   def this(left: Expression, right: Expression) = this(left, right, SQLConf.get.ansiEnabled)
 
@@ -47,11 +51,11 @@ case class GridDistance(left: Expression, right: Expression, failOnError: Boolea
     val end = endAny.asInstanceOf[Long]
     try {
       H3.getInstance().gridDistance(start, end)
-    }
-    catch {
+    } catch {
       case _: H3Exception if !failOnError => null
     }
   }
 
-  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): GridDistance = copy(left = newLeft, right = newRight)
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): GridDistance =
+    copy(left = newLeft, right = newRight)
 }

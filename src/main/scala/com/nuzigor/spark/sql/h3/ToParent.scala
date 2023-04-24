@@ -31,10 +31,13 @@ import org.apache.spark.sql.types.{DataType, IntegerType, LongType}
          > SELECT _FUNC_(622485130170302463l, 9);
           617981530542964735
      """,
-  since = "0.1.0")
-case class ToParent(left: Expression, right: Expression,
-                    failOnError: Boolean = SQLConf.get.ansiEnabled)
-  extends BinaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
+  since = "0.1.0"
+)
+case class ToParent(left: Expression, right: Expression, failOnError: Boolean = SQLConf.get.ansiEnabled)
+    extends BinaryExpression
+    with CodegenFallback
+    with ImplicitCastInputTypes
+    with NullIntolerant {
 
   def this(left: Expression, right: Expression) =
     this(left, right, SQLConf.get.ansiEnabled)
@@ -48,11 +51,11 @@ case class ToParent(left: Expression, right: Expression,
     val parentResolution = parentResolutionAny.asInstanceOf[Int]
     try {
       H3.getInstance().cellToParent(h3, parentResolution)
-    }
-    catch {
+    } catch {
       case _: IllegalArgumentException if !failOnError => null
     }
   }
 
-  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): ToParent = copy(left = newLeft, right = newRight)
+  override protected def withNewChildrenInternal(newLeft: Expression, newRight: Expression): ToParent =
+    copy(left = newLeft, right = newRight)
 }
