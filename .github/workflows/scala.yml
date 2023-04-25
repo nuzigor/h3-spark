@@ -25,6 +25,9 @@ jobs:
       uses: coursier/cache-action@v6
     - name: Run tests
       run: sbt test
+    - run: sbt scalafmtSbtCheck scalafmtCheckAll
+    - run: sbt "scalafixAll --check"
+    - run: sbt headerCheck
     - name: Cleanup before cache
       shell: bash
       run: |
