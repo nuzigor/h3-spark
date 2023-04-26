@@ -36,10 +36,10 @@ ThisBuild / scalacOptions ++= List("-Ywarn-unused-import", "-Ywarn-adapted-args"
 lazy val root = (project in file("."))
   .settings(name := "h3-spark")
 
-val sparkVersion = "3.3.1"
-val h3Version = "4.0.2"
+val sparkVersion = "3.3.2"
+val h3Version = "4.1.1"
 val jtsVersion = "1.19.0"
-val scalatestVersion = "3.2.14"
+val scalatestVersion = "3.2.15"
 
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % sparkVersion % "provided",
