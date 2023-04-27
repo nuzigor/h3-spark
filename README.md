@@ -11,7 +11,7 @@ Installation
 
 Fetch the JAR file from Maven.
 
-    libraryDependencies += "io.github.nuzigor" %% "h3-spark" % "0.9.0"
+    libraryDependencies += "io.github.nuzigor" %% "h3-spark" % "0.9.1"
 
 h3-spark supports only Spark 3.2.1+.
 
@@ -29,31 +29,71 @@ Config your spark applications with `spark.sql.extensions` option: `spark.sql.ex
 
 For example, to use in pure Spark SQL environment:
 
-    spark-sql --packages io.github.nuzigor:h3-spark_2.12:0.9.0 --conf spark.sql.extensions=com.nuzigor.spark.sql.h3.H3SqlExtensions
+    spark-sql --packages io.github.nuzigor:h3-spark_2.12:0.9.1 --conf spark.sql.extensions=com.nuzigor.spark.sql.h3.H3SqlExtensions
 
 Supported functions
 --------------
 
-- h3_from_latlng
-- h3_from_wkt
-- h3_array_from_wkt
-- h3_grid_disk
-- h3_grid_ring
-- h3_grid_path
-- h3_grid_distance
-- h3_get_resolution
-- h3_is_valid
-- h3_to_parent
-- h3_to_children
-- h3_to_center_child
-- h3_compact
-- h3_uncompact
-- h3_are_neighbors
-- h3_cell_area_km2
-- h3_cell_area_m2
-- h3_cell_area_rads2
-- h3_distance_km
-- h3_distance_m
-- h3_distance_rads
-- h3_is_pentagon
-- h3_grid_disk_distances
+| Spark function         | Corresponding h3 function                   |
+|------------------------|---------------------------------------------|
+| h3_from_latlng         | latLngToCell                                |
+| h3_from_wkt            | latLngToCell                                |
+| h3_array_from_wkt      | latLngToCell, polygonToCells, gridPathCells |
+| h3_grid_disk           | gridDisk                                    |
+| h3_grid_ring           | gridRingUnsafe                              |
+| h3_grid_path           | gridPathCells                               |
+| h3_grid_distance       | gridDistance                                |
+| h3_get_resolution      | getResolution                               |
+| h3_is_valid            | isValidCell                                 |
+| h3_to_parent           | cellToParent                                |
+| h3_to_children         | cellToChildren                              |
+| h3_to_center_child     | cellToCenterChild                           |
+| h3_compact             | compactCells                                |
+| h3_uncompact           | uncompactCells                              |
+| h3_are_neighbors       | areNeighborCells                            |
+| h3_cell_area_km2       | cellArea                                    |
+| h3_cell_area_m2        | cellArea                                    |
+| h3_cell_area_rads2     | cellArea                                    |
+| h3_distance_km         | greatCircleDistance                         |
+| h3_distance_m          | greatCircleDistance                         |
+| h3_distance_rads       | greatCircleDistance                         |
+| h3_is_pentagon         | isPentagon                                  |
+| h3_grid_disk_distances | gridDiskDistances                           |
+
+Unsupported functions
+--------------
+
+- getBaseCellNumber
+- stringToH3
+- h3ToString
+- isResClassIII
+- getIcosahedronFaces
+- cellToLatLng
+- cellToBoundary
+- gridDiskUnsafe
+- gridDiskDistancesUnsafe
+- gridDiskDistancesSafe
+- gridDisksUnsafe
+- cellToLocalIj
+- localIjToCell
+- cellToChildPos
+- childPosToCell
+- cellsToLinkedMultiPolygon
+- cellsToMultiPolygon
+- cellsToDirectedEdge
+- isValidDirectedEdge
+- getDirectedEdgeOrigin
+- getDirectedEdgeDestination
+- directedEdgeToCells
+- originToDirectedEdges
+- directedEdgeToBoundary
+- cellToVertex
+- cellToVertexes
+- vertexToLatLng
+- isValidVertex
+- getHexagonAreaAvg
+- getHexagonEdgeLengthAvg
+- edgeLength
+- getNumCells
+- getRes0Cells
+- getPentagons
