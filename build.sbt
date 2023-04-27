@@ -40,8 +40,7 @@ releaseProcess := Seq[ReleaseStep](
   releaseStepCommand("publishSigned"),
   releaseStepCommand("sonatypeBundleRelease"),
   setNextVersion,
-  commitNextVersion,
-  pushChanges
+  commitNextVersion
 )
 
 lazy val root = (project in file("."))
