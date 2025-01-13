@@ -7,9 +7,8 @@
 package com.nuzigor.spark.sql.h3
 
 import com.nuzigor.h3.H3
-import org.apache.spark.sql.catalyst.expressions.codegen.CodegenFallback
+import org.apache.spark.sql.catalyst.expressions.codegen.{CodeGenerator, CodegenContext, ExprCode}
 import org.apache.spark.sql.catalyst.expressions.{Expression, ExpressionDescription, ImplicitCastInputTypes, NullIntolerant, UnaryExpression}
-import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.types.{DataType, IntegerType, LongType}
 
 /**
@@ -29,11 +28,9 @@ import org.apache.spark.sql.types.{DataType, IntegerType, LongType}
      """,
   since = "0.7.0"
 )
-case class GetBaseCellNumber(child: Expression) extends UnaryExpression with CodegenFallback with ImplicitCastInputTypes with NullIntolerant {
-
+case class GetBaseCellNumber(child: Expression) extends UnaryExpression with ImplicitCastInputTypes with NullIntolerant {
   override def inputTypes: Seq[DataType] = Seq(LongType)
   override def dataType: DataType = IntegerType
-
   override def nullable: Boolean = true
 
   override protected def nullSafeEval(originAny: Any): Any = {
@@ -44,6 +41,18 @@ case class GetBaseCellNumber(child: Expression) extends UnaryExpression with Cod
     } else {
       null
     }
+  }
+
+  override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
+    nullSafeCodeGen(ctx, ev, origin => {
+      s"""
+         |int h3BcOffset = 45;
+         |long h3BcMask = 127L << h3BcOffset;
+         |long initial = ($origin & h3BcMask) >> h3BcOffset;
+         |${ev.value} = (${CodeGenerator.javaType(dataType)}) initial;
+         |${ev.isNull} = !(0 <= ${ev.value} && ${ev.value} <= 121);
+         |""".stripMargin
+    })
   }
 
   override protected def withNewChildInternal(newChild: Expression): GetBaseCellNumber = copy(child = newChild)
