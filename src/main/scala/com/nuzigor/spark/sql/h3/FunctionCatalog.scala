@@ -23,7 +23,6 @@ object FunctionCatalog {
     createFunctionDescription[GridDistance]("h3_grid_distance"),
     createFunctionDescription[GetResolution]("h3_get_resolution"),
     createFunctionDescription[IsValid]("h3_is_valid"),
-    createFunctionDescription[GetBaseCellNumber]("h3_base_cell_number"),
     createFunctionDescription[ToParent]("h3_to_parent"),
     createFunctionDescription[ToChildren]("h3_to_children"),
     createFunctionDescription[ToCenterChild]("h3_to_center_child"),

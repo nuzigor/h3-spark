@@ -170,16 +170,6 @@ object functions {
   }
 
   /**
-   * Returns the base cell number for h3 index
-   *
-   * @param h3 h3 index
-   * @return base cell number of h3 index
-   */
-  def h3_base_cell_number(h3: Column): Column = withExpr {
-    GetBaseCellNumber(h3.expr)
-  }
-
-  /**
    * Returns true if h3 index is valid
    * @param h3 h3 index
    * @return true if valid, false otherwise
