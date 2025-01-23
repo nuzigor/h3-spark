@@ -46,7 +46,7 @@ releaseProcess := Seq[ReleaseStep](
 lazy val root = (project in file("."))
   .settings(name := "h3-spark")
 
-val sparkVersion = "3.3.2"
+val sparkVersion = "3.5.2"
 val h3Version = "4.1.1"
 val jtsVersion = "1.19.0"
 val scalatestVersion = "3.2.15"

@@ -24,7 +24,7 @@ class GetBaseCellNumberSpec extends H3Spec {
     val df = sparkSession.range(1)
       .withColumn("h3", ceil(lit(h3) + rand(42).cast(LongType)))
       .withColumn("baseCellNumber", h3_base_cell_number(col("h3")))
-    val h3_base_cell = df.first().getAs[Integer](0)
+    val h3_base_cell = df.select("baseCellNumber").first().getAs[Integer](0)
     assert(h3_base_cell == 28)
 
   }
