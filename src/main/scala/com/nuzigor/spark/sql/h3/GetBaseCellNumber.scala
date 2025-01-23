@@ -44,15 +44,19 @@ case class GetBaseCellNumber(child: Expression) extends UnaryExpression with Imp
   }
 
   override protected def doGenCode(ctx: CodegenContext, ev: ExprCode): ExprCode = {
-    nullSafeCodeGen(ctx, ev, origin => {
-      s"""
+    nullSafeCodeGen(
+      ctx,
+      ev,
+      origin => {
+        s"""
          |int h3BcOffset = 45;
          |long h3BcMask = 127L << h3BcOffset;
          |long initial = ($origin & h3BcMask) >> h3BcOffset;
          |${ev.value} = (${CodeGenerator.javaType(dataType)}) initial;
          |${ev.isNull} = !(0 <= ${ev.value} && ${ev.value} <= 121);
          |""".stripMargin
-    })
+      }
+    )
   }
 
   override protected def withNewChildInternal(newChild: Expression): GetBaseCellNumber = copy(child = newChild)
