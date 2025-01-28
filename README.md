@@ -117,3 +117,4 @@ Releasing new version
   - Set `scalatestVersion` to the latest [scalatest](https://github.com/scalatest/scalatest) version
 - Test and commit the changes
 - Run `sbt release`
+- Create and merge PR
