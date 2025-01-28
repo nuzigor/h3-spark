@@ -22,7 +22,7 @@ ThisBuild / publishMavenStyle := true
 ThisBuild / publishTo := sonatypePublishToBundle.value
 ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
 
-ThisBuild / scalaVersion := "2.12.17"
+ThisBuild / scalaVersion := "2.12.18"
 ThisBuild / semanticdbEnabled := true
 ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 ThisBuild / scalacOptions ++= List("-Ywarn-unused-import", "-Ywarn-adapted-args", "-deprecation")
@@ -48,8 +48,8 @@ lazy val root = (project in file("."))
 
 val sparkVersion = "3.5.2"
 val h3Version = "4.1.1"
-val jtsVersion = "1.19.0"
-val scalatestVersion = "3.2.15"
+val jtsVersion = "1.20.0"
+val scalatestVersion = "3.2.19"
 
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % sparkVersion % "provided",

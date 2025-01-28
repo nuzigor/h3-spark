@@ -26,7 +26,7 @@ import org.apache.spark.sql.types.{DataType, IntegerType, LongType}
          > SELECT _FUNC_(622485130170302463l);
          //TODO: Add output examples
      """,
-  since = "0.7.0"
+  since = "0.9.2"
 )
 case class GetBaseCellNumber(child: Expression) extends UnaryExpression with ImplicitCastInputTypes with NullIntolerant {
   override def inputTypes: Seq[DataType] = Seq(LongType)

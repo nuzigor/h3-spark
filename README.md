@@ -59,11 +59,11 @@ Supported functions
 | h3_distance_rads       | greatCircleDistance                         |
 | h3_is_pentagon         | isPentagon                                  |
 | h3_grid_disk_distances | gridDiskDistances                           |
+| h3_base_cell_number    | getBaseCellNumber                           |
 
 Unsupported functions
 --------------
 
-- getBaseCellNumber
 - stringToH3
 - h3ToString
 - isResClassIII
@@ -97,3 +97,24 @@ Unsupported functions
 - getNumCells
 - getRes0Cells
 - getPentagons
+
+Releasing new version
+--------------
+- Upgrade [sbt](https://www.scala-sbt.org/) to the latest version in `project/build.properties`
+- Upgrade plugins to the latest version in `project/site.sbt`:
+  - [sbt-assembly](https://github.com/sbt/sbt-assembly)
+  - [sbt-pgp](https://github.com/sbt/sbt-pgp)
+  - [sbt-scalafix](https://github.com/scalacenter/sbt-scalafix)
+  - [sbt-scalafmt](https://github.com/scalameta/sbt-scalafmt)
+  - [sbt-header](https://github.com/sbt/sbt-header)
+  - [sbt-sonatype](https://github.com/xerial/sbt-sonatype)
+  - [sbt-release](https://github.com/sbt/sbt-release)
+- Upgrade libraries versions in `build.sbt`: 
+  - Set `sparkVersion` to the required [Spark](https://github.com/apache/spark) version
+  - Set `scalaVersion` to the version used to build Spark (see <scala.version> in https://github.com/apache/spark/blob/v{sparkVersion}/pom.xml)
+  - Set `h3Version` to the latest [h3](https://github.com/uber/h3-java) version
+  - Set `jtsVersion` to the latest [jts](https://github.com/locationtech/jts) version
+  - Set `scalatestVersion` to the latest [scalatest](https://github.com/scalatest/scalatest) version
+- Test and commit the changes
+- Run `sbt release`
+- Create and merge PR
